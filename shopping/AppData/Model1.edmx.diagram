@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="1d5db9dab30e4a6ca7c861d67d15657a" Name="Diagram1">
+        <EntityTypeShape EntityType="dressshopModel.basket" Width="1.5" PointX="5.25" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.brand" Width="1.5" PointX="0.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.category" Width="1.5" PointX="0.75" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.department" Width="1.5" PointX="0.75" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.details_order" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.order" Width="1.5" PointX="3" PointY="16.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.order_status" Width="1.5" PointX="0.75" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.product" Width="1.5" PointX="3" PointY="2.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.role" Width="1.5" PointX="1.5" PointY="22" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.type" Width="1.5" PointX="0.75" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="dressshopModel.user" Width="1.5" PointX="0.75" PointY="17.25" IsExpanded="true" />
+        <AssociationConnector Association="dressshopModel.FK_basket_product" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_basket_user" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_product_brand" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_product_category" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_product_department" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_details_order_order" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_details_order_product" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_order_order_status" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_order_user" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_product_type" ManuallyRouted="false" />
+        <AssociationConnector Association="dressshopModel.FK_user_role" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
