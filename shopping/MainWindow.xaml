@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="Магазин одежды" Height="450" Width="800">
     <Grid>
-        
+        <Frame x:Name="frmMain" NavigationUIVisibility="Hidden" />
+
     </Grid>
 </Window>

@@ -23,9 +23,9 @@ namespace shopping
     {
         public MainWindow()
         {
-            InitializeComponent();
-            AppConnect.modelOdb = new dressshopEntities();
-            //AppFrame.frameMain = frmMain;
+            /*InitializeComponent();
+            AppConnect.modelOdb = new dressshopEntities();*/
+            AppFrame.frameMain = frmMain;
         }
     }
 }
