@@ -23,9 +23,12 @@ namespace shopping
     {
         public MainWindow()
         {
-            /*InitializeComponent();
-            AppConnect.modelOdb = new dressshopEntities();*/
+            InitializeComponent();
+            AppConnect.modelOdb = new dressshopEntities();
             AppFrame.frameMain = frmMain;
+            frmMain.Navigate(new Pages.Autoriz());
         }
+
+
     }
 }
