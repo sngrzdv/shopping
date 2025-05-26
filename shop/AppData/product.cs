@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace shopping.AppData
+namespace shop.AppData
 {
     using System;
     using System.Collections.Generic;
@@ -29,8 +29,8 @@ namespace shopping.AppData
         public decimal price { get; set; }
         public int quantity { get; set; }
         public string description { get; set; }
-        public byte[] image { get; set; }
         public int id_department { get; set; }
+        public string image { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<basket> basket { get; set; }
@@ -40,5 +40,20 @@ namespace shopping.AppData
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<details_order> details_order { get; set; }
         public virtual type type { get; set; }
+
+        public string CurrentPhoto
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(image) || String.IsNullOrWhiteSpace(image))
+                {
+                    return "/Images/picture.jpg";
+                }
+                else
+                {
+                    return "/Images/" + image;
+                }
+            }
+        }
     }
 }

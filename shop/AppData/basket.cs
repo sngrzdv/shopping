@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace shopping.AppData
+namespace shop.AppData
 {
     using System;
     using System.Collections.Generic;

@@ -7,27 +7,23 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace shopping.AppData
+namespace shop.AppData
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class order
+    public partial class type
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public order()
+        public type()
         {
-            this.details_order = new HashSet<details_order>();
+            this.product = new HashSet<product>();
         }
     
-        public int id_order { get; set; }
-        public int id_user { get; set; }
-        public int id_status { get; set; }
-        public System.DateTime date { get; set; }
+        public int id_type { get; set; }
+        public string type1 { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<details_order> details_order { get; set; }
-        public virtual order_status order_status { get; set; }
-        public virtual user user { get; set; }
+        public virtual ICollection<product> product { get; set; }
     }
 }

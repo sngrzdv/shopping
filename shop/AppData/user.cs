@@ -7,23 +7,32 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace shopping.AppData
+namespace shop.AppData
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class role
+    public partial class user
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public role()
+        public user()
         {
-            this.user = new HashSet<user>();
+            this.basket = new HashSet<basket>();
+            this.order = new HashSet<order>();
         }
     
+        public int id_user { get; set; }
+        public string surname { get; set; }
+        public string name { get; set; }
+        public string family_name { get; set; }
+        public string email { get; set; }
+        public string password { get; set; }
         public int id_role { get; set; }
-        public string role1 { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<user> user { get; set; }
+        public virtual ICollection<basket> basket { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<order> order { get; set; }
+        public virtual role role { get; set; }
     }
 }

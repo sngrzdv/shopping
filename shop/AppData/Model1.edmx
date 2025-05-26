@@ -72,8 +72,8 @@
           <Property Name="price" Type="decimal" Precision="10" Scale="2" Nullable="false" />
           <Property Name="quantity" Type="int" Nullable="false" />
           <Property Name="description" Type="nvarchar" MaxLength="200" />
-          <Property Name="image" Type="image" />
           <Property Name="id_department" Type="int" Nullable="false" />
+          <Property Name="image" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="role">
           <Key>
@@ -373,8 +373,8 @@
           <Property Name="price" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
           <Property Name="quantity" Type="Int32" Nullable="false" />
           <Property Name="description" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
-          <Property Name="image" Type="Binary" MaxLength="Max" FixedLength="false" />
           <Property Name="id_department" Type="Int32" Nullable="false" />
+          <Property Name="image" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="basket" Relationship="Self.FK_basket_product" FromRole="product" ToRole="basket" />
           <NavigationProperty Name="brand" Relationship="Self.FK_product_brand" FromRole="product" ToRole="brand" />
           <NavigationProperty Name="category" Relationship="Self.FK_product_category" FromRole="product" ToRole="category" />
@@ -681,8 +681,8 @@
                 <ScalarProperty Name="price" ColumnName="price" />
                 <ScalarProperty Name="quantity" ColumnName="quantity" />
                 <ScalarProperty Name="description" ColumnName="description" />
-                <ScalarProperty Name="image" ColumnName="image" />
                 <ScalarProperty Name="id_department" ColumnName="id_department" />
+                <ScalarProperty Name="image" ColumnName="image" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

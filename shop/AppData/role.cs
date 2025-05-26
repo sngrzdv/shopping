@@ -7,23 +7,23 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace shopping.AppData
+namespace shop.AppData
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class department
+    public partial class role
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public department()
+        public role()
         {
-            this.product = new HashSet<product>();
+            this.user = new HashSet<user>();
         }
     
-        public int id_department { get; set; }
-        public string department1 { get; set; }
+        public int id_role { get; set; }
+        public string role1 { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<product> product { get; set; }
+        public virtual ICollection<user> user { get; set; }
     }
 }
