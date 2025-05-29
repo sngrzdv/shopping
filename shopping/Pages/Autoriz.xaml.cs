@@ -26,7 +26,7 @@ namespace shopping.Pages
         public Autoriz()
         {
             InitializeComponent(); // Обязательная инициализация компонентов
-            AppConnect.modelOdb = new dressshopEntities(); // Подключение модели базы данных
+            AppConnect.modelOdb = new dresshopEntities(); // Подключение модели базы данных
         }
 
         private void BtnLogin_Click(object sender, RoutedEventArgs e)

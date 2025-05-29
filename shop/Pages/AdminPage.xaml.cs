@@ -21,43 +21,52 @@ namespace shop.Pages
     /// </summary>
     public partial class AdminPage : Page
     {
-        private Frame _adminFrame;
+        private Frame adminFrame;
+        private dressshopEntities db; // Экземпляр контекста базы данных
+        List<product> products;
 
         public AdminPage()
         {
             InitializeComponent();
-            _adminFrame = this.FindName("AdminFrame") as Frame;
+            adminFrame = FindName("AdminFrame") as Frame;
 
-            // Добавляем проверку на null
-            if (_adminFrame == null)
+            if (adminFrame == null)
             {
-                MessageBox.Show("Ошибка: не найден фрейм для навигации");
+                MessageBox.Show("Ошибка: не найден фрейм для навигации.", "Ошибка инициализации", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            /*_adminFrame.Navigate(new AdminProductsPage(_adminFrame));*/
+            // Инициализируем подключение к базе данных
+            db = new dressshopEntities(); // Создаем экземпляр контекста БД
+            LoadProducts(); // Загружаем товары сразу при открытии страницы
         }
 
-        // Остальные методы остаются без изменений
+        // Метод загрузки товаров
+        private void LoadProducts()
+        {
+            var products = db.product.ToList(); // Выбираем все записи из таблицы Products
+            listItems.ItemsSource = products; // Привязываем список товаров к ListView
+        }
+
+        // Обработчик нажатия кнопки Товары
         private void BtnProducts_Click(object sender, RoutedEventArgs e)
         {
-            /*_adminFrame.Navigate(new AdminProductsPage(_adminFrame));*/
+            /*adminFrame.Navigate(new AdminProductsPage(adminFrame));*/
         }
 
+        // Обработчик нажатия кнопки Заказы
         private void BtnOrders_Click(object sender, RoutedEventArgs e)
         {
-            /*_adminFrame?.Navigate(new AdminOrdersPage());*/
+            /*adminFrame.Navigate(new AdminOrdersPage());*/
         }
 
+        // Обработчик нажатия кнопки Пользователи
         private void BtnUsers_Click(object sender, RoutedEventArgs e)
         {
-            //    // Временная заглушка, пока нет реализации AdminUsersPage
-            //    MessageBox.Show("Раздел управления пользователями в разработке");
-
-            //    // Если страница существует:
-            //    // _adminFrame?.Navigate(new AdminUsersPage());
+            MessageBox.Show("Раздел управления пользователями в разработке.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        // Обработчик нажатия кнопки Выход
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
             if (AppFrame.frameMain != null)
@@ -66,38 +75,24 @@ namespace shop.Pages
             }
         }
 
+        // Другие обработчики (опционально):
         private void AddToCart_Click(object sender, RoutedEventArgs e)
         {
-            if ((sender as FrameworkElement)?.DataContext is product selectedItem)
+            // Реализуйте обработку добавления товара в корзину
+        }
+        private void listItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            // Получаем выбранный продукт
+            var selectedProduct = (sender as ListView)?.SelectedItem as product;
+
+            if (selectedProduct != null && adminFrame != null)
             {
-                var user = AppConnect.CurrentUser;
-                if (user == null)
-                {
-                    MessageBox.Show("Необходима авторизация.");
-                    return;
-                }
-
-                // Проверка, есть ли уже товар в корзине
-                var existingCart = AppConnect.modelOdb.basket
-                    .FirstOrDefault(c => c.id_user == user.id_user && c.id_product == selectedItem.id_product);
-
-                if (existingCart != null)
-                {
-                    existingCart.quantity += 1; // увеличиваем количество
-                }
-                else
-                {
-                    var cart = new basket
-                    {
-                        id_user = user.id_user,
-                        id_product = selectedItem.id_product,
-                        quantity = 1
-                    };
-                    AppConnect.modelOdb.basket.Add(cart);
-                }
-
-                AppConnect.modelOdb.SaveChanges();
-                MessageBox.Show($"Товар '{selectedItem.product1}' добавлен в корзину.");
+                // Открываем новую страницу с подробностями выбранного продукта
+                adminFrame.Navigate(new ProductDetails(selectedProduct));
+            }
+            else
+            {
+                MessageBox.Show("ATTANTION!!!");
             }
         }
     }

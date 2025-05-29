@@ -21,49 +21,56 @@ namespace shopping.Pages
     /// </summary>
     public partial class AdminPage : Page
     {
-        private Frame _adminFrame;
+        private Frame adminFrame;
 
         public AdminPage()
         {
             InitializeComponent();
-            _adminFrame = this.FindName("AdminFrame") as Frame;
+            adminFrame = FindName("AdminFrame") as Frame;
 
-            // Добавляем проверку на null
-            if (_adminFrame == null)
+            if (adminFrame == null)
             {
-                MessageBox.Show("Ошибка: не найден фрейм для навигации");
+                MessageBox.Show("Ошибка: не найден фрейм для навигации.", "Ошибка инициализации", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-
-            /*_adminFrame.Navigate(new AdminProductsPage(_adminFrame));*/
         }
 
-        // Остальные методы остаются без изменений
-        /*private void BtnProducts_Click(object sender, RoutedEventArgs e)
+        // Обработчик нажатия кнопки Товары
+        private void BtnProducts_Click(object sender, RoutedEventArgs e)
         {
-            _adminFrame.Navigate(new AdminProductsPage(_adminFrame));
-        }*/
+            /*adminFrame.Navigate(new AdminProductsPage(adminFrame));*/
+        }
 
-        /*private void BtnOrders_Click(object sender, RoutedEventArgs e)
+        // Обработчик нажатия кнопки Заказы
+        private void BtnOrders_Click(object sender, RoutedEventArgs e)
         {
-            _adminFrame?.Navigate(new AdminOrdersPage());
-        }*/
+            /*adminFrame.Navigate(new AdminOrdersPage());*/
+        }
 
-        //private void BtnUsers_Click(object sender, RoutedEventArgs e)
-        //{
-        //    // Временная заглушка, пока нет реализации AdminUsersPage
-        //    MessageBox.Show("Раздел управления пользователями в разработке");
+        // Обработчик нажатия кнопки Пользователи
+        private void BtnUsers_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Раздел управления пользователями в разработке.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
 
-        //    // Если страница существует:
-        //    // _adminFrame?.Navigate(new AdminUsersPage());
-        //}
-
+        // Обработчик нажатия кнопки Выход
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
             if (AppFrame.frameMain != null)
             {
                 AppFrame.frameMain.Navigate(new Autoriz());
             }
+        }
+
+        // Другие обработчики (опционально):
+        private void AddToCart_Click(object sender, RoutedEventArgs e)
+        {
+            // Реализуйте обработку добавления товара в корзину
+        }
+
+        private void AddToFavorites_Click(object sender, RoutedEventArgs e)
+        {
+            // Реализуйте обработку добавления товара в избранное
         }
     }
 }

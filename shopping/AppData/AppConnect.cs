@@ -8,6 +8,6 @@ namespace shopping.AppData
 {
     internal class AppConnect
     {
-        public static dressshopEntities modelOdb;
+        public static dresshopEntities modelOdb;
     }
 }

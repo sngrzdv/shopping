@@ -1,4 +1,4 @@
-﻿using shopping.AppData;
+﻿using shop.AppData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,21 +14,22 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace shopping
+namespace shop.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
+    /// Логика взаимодействия для ProductDetails.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ProductDetails : Page
     {
-        public MainWindow()
+        public ProductDetails(product selectedProduct)
         {
             InitializeComponent();
-            AppConnect.modelOdb = new dresshopEntities();
-            AppFrame.frameMain = frmMain;
-            frmMain.Navigate(new Pages.Autoriz());
+            this.DataContext = selectedProduct;
         }
 
-
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.GoBack();
+        }
     }
 }
