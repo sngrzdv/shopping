@@ -29,7 +29,14 @@ namespace shop.Pages
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.GoBack();
+            if (NavigationService.CanGoBack)
+            {
+                NavigationService.GoBack();
+            }
+            else
+            {
+                MessageBox.Show("Нет предыдущих страниц для возвращения.", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
     }
 }

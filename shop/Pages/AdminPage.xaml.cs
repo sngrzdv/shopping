@@ -82,17 +82,12 @@ namespace shop.Pages
         }
         private void listItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            // Получаем выбранный продукт
-            var selectedProduct = (sender as ListView)?.SelectedItem as product;
-
-            if (selectedProduct != null && adminFrame != null)
+            var selectedProduct = listItems.SelectedItem as product;
+            if (selectedProduct != null)
             {
-                // Открываем новую страницу с подробностями выбранного продукта
-                adminFrame.Navigate(new ProductDetails(selectedProduct));
-            }
-            else
-            {
-                MessageBox.Show("ATTANTION!!!");
+                listItems.Visibility = Visibility.Collapsed;
+                AdminFrame.Visibility = Visibility.Visible;
+                AdminFrame.Navigate(new ProductDetails(selectedProduct));
             }
         }
     }

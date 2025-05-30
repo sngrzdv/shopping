@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto"/>
             <!-- Строка меню -->
             <RowDefinition Height="*"/>
-            <!-- Основная область страниц -->
+            <!-- Основная область контента -->
         </Grid.RowDefinitions>
 
         <!-- Верхнее меню -->
@@ -24,38 +24,49 @@
             <Button Content="Выход" Style="{StaticResource MenuButton}" Click="BtnLogout_Click" HorizontalAlignment="Right" Foreground="#8800cc"/>
         </StackPanel>
 
-        <!-- Основное содержимое панели администрирования -->
-        <Frame x:Name="AdminFrame" Grid.Row="1" NavigationUIVisibility="Hidden" Background="#FFEC9DFF"/>
-
-        <!-- Список товаров -->
-        <ListView x:Name="listItems" Grid.Row="1" Margin="10,10,10,10" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="#FFEC9DFF" MouseDoubleClick="listItems_MouseDoubleClick">
-            <ListView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel/>
-                </ItemsPanelTemplate>
-            </ListView.ItemsPanel>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderBrush="#8800cc" BorderThickness="2" CornerRadius="8" Margin="10" Padding="10" Width="300" Height="380" Background="White">
-                        <StackPanel>
-                            <Image Source="{Binding CurrentPhoto}" Width="270" Height="140" Stretch="Fill" Margin="0,1,1,10"/>
-                            <TextBlock Text="{Binding product1}" FontWeight="Bold" FontSize="16" TextAlignment="Center" Foreground="#8800cc"/>
-                            <TextBlock Text="Цена:" FontWeight="Bold" Foreground="#8800cc"/>
-                            <TextBlock Text="{Binding price, StringFormat='{} {0:N}'}" Margin="0,0,0,5" Foreground="#8800cc"/>
-                            <TextBlock Text="В наличии:" FontWeight="Bold" Foreground="#8800cc"/>
-                            <TextBlock Text="{Binding quantity}" Margin="0,0,0,5" Foreground="#8800cc"/>
-                            <TextBlock Text="Описание:" FontWeight="Bold" Foreground="#8800cc"/>
-                            <TextBlock Text="{Binding description}" Margin="0,0,0,5" Foreground="#8800cc"/>
-                            <TextBlock Text="Бренд:" FontWeight="Bold" Foreground="#8800cc"/>
-                            <TextBlock Text="{Binding brand.brand1}" Margin="0,0,0,5" Foreground="#8800cc"/>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="Редактировать" Margin="5" BorderBrush="#8800cc" Background="#FFF6D0FF" Foreground="#8800cc"/>
-                                <Button Content="Удалить" Margin="5" BorderBrush="#8800cc" Background="#FFF6D0FF" Foreground="#8800cc"/>
+        <!-- Основной контент -->
+        <Grid Grid.Row="1">
+            <!-- Список товаров (видим по умолчанию) -->
+            <ListView x:Name="listItems" 
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                      Background="#FFEC9DFF" 
+                      MouseDoubleClick="listItems_MouseDoubleClick"
+                      Visibility="Visible">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="#8800cc" BorderThickness="2" CornerRadius="8" 
+                                Margin="10" Padding="10" Width="300" Height="380" Background="White">
+                            <StackPanel>
+                                <Image Source="{Binding CurrentPhoto}" Width="270" Height="140" Stretch="Fill" Margin="0,1,1,10"/>
+                                <TextBlock Text="{Binding product1}" FontWeight="Bold" FontSize="16" TextAlignment="Center" Foreground="#8800cc"/>
+                                <TextBlock Text="Цена:" FontWeight="Bold" Foreground="#8800cc"/>
+                                <TextBlock Text="{Binding price, StringFormat='{} {0:N}'}" Margin="0,0,0,5" Foreground="#8800cc"/>
+                                <TextBlock Text="В наличии:" FontWeight="Bold" Foreground="#8800cc"/>
+                                <TextBlock Text="{Binding quantity}" Margin="0,0,0,5" Foreground="#8800cc"/>
+                                <TextBlock Text="Описание:" FontWeight="Bold" Foreground="#8800cc"/>
+                                <TextBlock Text="{Binding description}" Margin="0,0,0,5" Foreground="#8800cc"/>
+                                <TextBlock Text="Бренд:" FontWeight="Bold" Foreground="#8800cc"/>
+                                <TextBlock Text="{Binding brand.brand1}" Margin="0,0,0,5" Foreground="#8800cc"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Content="Редактировать" Margin="5" BorderBrush="#8800cc" Background="#FFF6D0FF" Foreground="#8800cc"/>
+                                    <Button Content="Удалить" Margin="5" BorderBrush="#8800cc" Background="#FFF6D0FF" Foreground="#8800cc"/>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                        </Border>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!-- Фрейм для деталей товара (изначально скрыт) -->
+            <Frame x:Name="AdminFrame" 
+                   NavigationUIVisibility="Hidden" 
+                   Background="#FFEC9DFF"
+                   Visibility="Collapsed"/>
+        </Grid>
     </Grid>
 </Page>

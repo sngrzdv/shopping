@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:shop"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        
         <Style x:Key="MenuButton" TargetType="Button">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="Transparent"/>
