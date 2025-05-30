@@ -14,72 +14,289 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using shop.AppData;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
 namespace shop.Pages
 {
-    /// <summary>
-    /// Логика взаимодействия для AdminPage.xaml
-    /// </summary>
     public partial class AdminPage : Page
     {
         private Frame adminFrame;
-        private dressshopEntities db; // Экземпляр контекста базы данных
-        List<product> products;
+        private dressshopEntities db;
+        private List<product> allProducts;
+        private department selectedDepartment;
+        private category selectedCategory;
+        private type selectedType;
 
         public AdminPage()
         {
             InitializeComponent();
             adminFrame = FindName("AdminFrame") as Frame;
-
-            if (adminFrame == null)
-            {
-                MessageBox.Show("Ошибка: не найден фрейм для навигации.", "Ошибка инициализации", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            // Инициализируем подключение к базе данных
-            db = new dressshopEntities(); // Создаем экземпляр контекста БД
-            LoadProducts(); // Загружаем товары сразу при открытии страницы
+            db = new dressshopEntities();
+            
+            LoadDepartments();
+            LoadProducts();
         }
 
-        // Метод загрузки товаров
+        private void LoadDepartments()
+        {
+            var departments = db.department.ToList();
+            DepartmentList.ItemsSource = departments;
+        }
+
+        private void LoadCategories(int? departmentId = null)
+        {
+            // В вашей структуре нет прямой связи между department и category,
+            // поэтому будем фильтровать через продукты
+            IQueryable<category> categories;
+
+            if (departmentId != null)
+            {
+                // Получаем только те категории, которые есть у продуктов данного департамента
+                // с проверкой на NULL для category
+                var categoryIds = db.product
+                    .Where(p => p.department.id_department == departmentId && p.category != null)
+                    .Select(p => p.category.id_category)
+                    .Distinct()
+                    .ToList();
+
+                categories = db.category.Where(c => categoryIds.Contains(c.id_category));
+            }
+            else
+            {
+                categories = db.category;
+            }
+
+            CategoryList.ItemsSource = categories.ToList();
+            CategoryExpander.IsExpanded = departmentId != null;
+        }
+
+        private void LoadTypes(int? categoryId = null)
+        {
+            IQueryable<type> types = db.type; // Инициализация по умолчанию
+
+            if (categoryId != null)
+            {
+                // Получаем только те типы, которые есть у продуктов данной категории
+                // с проверкой на NULL для type
+                var typeIds = db.product
+                    .Where(p => p.category.id_category == categoryId && p.type != null)
+                    .Select(p => p.type.id_type)
+                    .Distinct()
+                    .ToList();
+
+                types = db.type.Where(t => typeIds.Contains(t.id_type));
+            }
+
+            TypeList.ItemsSource = types.ToList();
+            TypeExpander.IsExpanded = categoryId != null;
+        }
+
         private void LoadProducts()
         {
-            var products = db.product.ToList(); // Выбираем все записи из таблицы Products
-            listItems.ItemsSource = products; // Привязываем список товаров к ListView
+            allProducts = db.product
+                .Include("department")
+                .Include("category")
+                .Include("type")
+                .Include("brand")
+                .ToList();
+            ApplyFilters();
         }
 
-        // Обработчик нажатия кнопки Товары
-        private void BtnProducts_Click(object sender, RoutedEventArgs e)
+        private void ApplyFilters()
         {
-            /*adminFrame.Navigate(new AdminProductsPage(adminFrame));*/
-        }
+            IEnumerable<product> query = allProducts.AsEnumerable();
 
-        // Обработчик нажатия кнопки Заказы
-        private void BtnOrders_Click(object sender, RoutedEventArgs e)
-        {
-            /*adminFrame.Navigate(new AdminOrdersPage());*/
-        }
-
-        // Обработчик нажатия кнопки Пользователи
-        private void BtnUsers_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Раздел управления пользователями в разработке.", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        // Обработчик нажатия кнопки Выход
-        private void BtnLogout_Click(object sender, RoutedEventArgs e)
-        {
-            if (AppFrame.frameMain != null)
+            // Фильтр по департаменту (с проверкой на NULL)
+            if (selectedDepartment != null)
             {
-                AppFrame.frameMain.Navigate(new Autoriz());
+                query = query.Where(p => p.department != null && p.department.id_department == selectedDepartment.id_department);
+            }
+
+            // Фильтр по категории (с проверкой на NULL)
+            if (selectedCategory != null)
+            {
+                query = query.Where(p => p.category != null && p.category.id_category == selectedCategory.id_category);
+            }
+
+            // Фильтр по типу (с проверкой на NULL)
+            if (selectedType != null)
+            {
+                query = query.Where(p => p.type != null && p.type.id_type == selectedType.id_type);
+            }
+
+            // Поиск
+            if (!string.IsNullOrWhiteSpace(SearchBox.Text))
+            {
+                var searchText = SearchBox.Text.ToLower();
+                query = query.Where(p => 
+                    p.product1.ToLower().Contains(searchText) || 
+                    (p.description != null && p.description.ToLower().Contains(searchText)) ||
+                    (p.brand != null && p.brand.brand1.ToLower().Contains(searchText)));
+            }
+
+            // Сортировка
+            switch ((SortComboBox.SelectedItem as ComboBoxItem)?.Content.ToString())
+            {
+                case "По названию (А-Я)":
+                    query = query.OrderBy(p => p.product1);
+                    break;
+                case "По названию (Я-А)":
+                    query = query.OrderByDescending(p => p.product1);
+                    break;
+                case "По цене (возрастание)":
+                    query = query.OrderBy(p => p.price);
+                    break;
+                case "По цене (убывание)":
+                    query = query.OrderByDescending(p => p.price);
+                    break;
+                default:
+                    query = query.OrderBy(p => p.id_product);
+                    break;
+            }
+
+            listItems.ItemsSource = query.ToList();
+        }
+
+        private void DepartmentList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedDepartment = DepartmentList.SelectedItem as department;
+            selectedCategory = null;
+            selectedType = null;
+            
+            if (selectedDepartment != null)
+            {
+                LoadCategories(selectedDepartment.id_department);
+            }
+            else
+            {
+                CategoryList.ItemsSource = null;
+                TypeList.ItemsSource = null;
+            }
+            
+            ApplyFilters();
+        }
+
+        private void CategoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedCategory = CategoryList.SelectedItem as category;
+            selectedType = null;
+            
+            if (selectedCategory != null)
+            {
+                LoadTypes(selectedCategory.id_category);
+            }
+            else
+            {
+                TypeList.ItemsSource = null;
+            }
+            
+            ApplyFilters();
+        }
+        private void BtnAllProducts_Click(object sender, RoutedEventArgs e)
+        {
+            // Сбрасываем выбранные фильтры
+            selectedDepartment = null;
+            selectedCategory = null;
+            selectedType = null;
+
+            // Очищаем выбор в списках
+            DepartmentList.SelectedItem = null;
+            CategoryList.SelectedItem = null;
+            TypeList.SelectedItem = null;
+
+            // Очищаем поиск
+            SearchBox.Text = "";
+
+            // Сбрасываем сортировку на "По умолчанию"
+            SortComboBox.SelectedIndex = 0;
+
+            // Загружаем все товары
+            LoadProducts();
+
+            // Обновляем списки категорий и типов (чтобы они не зависели от предыдущих фильтров)
+            LoadCategories();
+            LoadTypes();
+        }
+        /*private void LoadProducts()
+        {
+            allProducts = db.product
+                .Include("department")
+                .Include("category")
+                .Include("type")
+                .Include("brand")
+                .ToList();
+
+            ApplyFilters(); // Применяем фильтры (если они есть)
+        }*/
+
+        private void TypeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            selectedType = TypeList.SelectedItem as type;
+            ApplyFilters();
+        }
+
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void SortComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ApplyFilters();
+        }
+
+        private void EditProduct_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var product = button?.DataContext as product;
+            
+            if (product != null)
+            {
+                // Реализуйте открытие страницы редактирования товара
+                // adminFrame.Navigate(new EditProductPage(product));
+                MessageBox.Show($"Редактирование товара: {product.product1}");
             }
         }
 
-        // Другие обработчики (опционально):
-        private void AddToCart_Click(object sender, RoutedEventArgs e)
+        private void DeleteProduct_Click(object sender, RoutedEventArgs e)
         {
-            // Реализуйте обработку добавления товара в корзину
+            var button = sender as Button;
+            var product = button?.DataContext as product;
+            
+            if (product != null)
+            {
+                var result = MessageBox.Show($"Вы уверены, что хотите удалить товар '{product.product1}'?", 
+                    "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        db.product.Remove(product);
+                        db.SaveChanges();
+                        LoadProducts();
+                        MessageBox.Show("Товар успешно удален.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Ошибка при удалении товара: {ex.Message}", "Ошибка", 
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
         }
+
+        // Остальные методы остаются без изменений
+        private void BtnProducts_Click(object sender, RoutedEventArgs e) { /* ... */ }
+        private void BtnOrders_Click(object sender, RoutedEventArgs e) { /* ... */ }
+        private void BtnUsers_Click(object sender, RoutedEventArgs e) { /* ... */ }
+        private void BtnLogout_Click(object sender, RoutedEventArgs e) { /* ... */ }
         private void listItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var selectedProduct = listItems.SelectedItem as product;
