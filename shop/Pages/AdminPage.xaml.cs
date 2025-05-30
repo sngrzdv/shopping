@@ -14,14 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using shop.AppData;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-
 namespace shop.Pages
 {
     public partial class AdminPage : Page
@@ -36,9 +28,13 @@ namespace shop.Pages
         public AdminPage()
         {
             InitializeComponent();
+
+            // Добавьте проверку на повторную инициализацию
+            if (adminFrame != null) return;
+
             adminFrame = FindName("AdminFrame") as Frame;
             db = new dressshopEntities();
-            
+
             LoadDepartments();
             LoadProducts();
         }
@@ -99,18 +95,35 @@ namespace shop.Pages
 
         private void LoadProducts()
         {
-            allProducts = db.product
+            // Получаем продукты с включенными связанными данными
+            var productsWithDetails = db.product
                 .Include("department")
                 .Include("category")
                 .Include("type")
                 .Include("brand")
                 .ToList();
+
+            // Обрабатываем null-значения прямо в объектах product
+            foreach (var p in productsWithDetails)
+            {
+                if (string.IsNullOrEmpty(p.description))
+                    p.description = "Нет описания";
+
+                if (p.brand == null || string.IsNullOrEmpty(p.brand.brand1))
+                    p.brand = new brand { brand1 = "Бренд не указан" };
+            }
+
+            allProducts = productsWithDetails;
             ApplyFilters();
         }
 
         private void ApplyFilters()
         {
-            IEnumerable<product> query = allProducts.AsEnumerable();
+            IQueryable<product> query = db.product.AsQueryable();
+
+            // Применяем фильтры
+            if (selectedDepartment != null)
+                query = query.Where(p => p.department.id_department == selectedDepartment.id_department);
 
             // Фильтр по департаменту (с проверкой на NULL)
             if (selectedDepartment != null)
@@ -143,8 +156,8 @@ namespace shop.Pages
             // Сортировка
             switch ((SortComboBox.SelectedItem as ComboBoxItem)?.Content.ToString())
             {
-                case "По названию (А-Я)":
-                    query = query.OrderBy(p => p.product1);
+                case "По названию (А-Я)": 
+                    query = query.OrderBy(p => p.product1); 
                     break;
                 case "По названию (Я-А)":
                     query = query.OrderByDescending(p => p.product1);
@@ -223,17 +236,6 @@ namespace shop.Pages
             LoadCategories();
             LoadTypes();
         }
-        /*private void LoadProducts()
-        {
-            allProducts = db.product
-                .Include("department")
-                .Include("category")
-                .Include("type")
-                .Include("brand")
-                .ToList();
-
-            ApplyFilters(); // Применяем фильтры (если они есть)
-        }*/
 
         private void TypeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -254,12 +256,16 @@ namespace shop.Pages
         private void EditProduct_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
-            var product = button?.DataContext as product;
-            
+            var product = (sender as Button)?.DataContext as product;
             if (product != null)
             {
-                // Реализуйте открытие страницы редактирования товара
-                // adminFrame.Navigate(new EditProductPage(product));
+                listItems.Visibility = Visibility.Collapsed;
+                AdminFrame.Visibility = Visibility.Visible;
+                AdminFrame.Navigate(new EditProductPage(product, () =>
+                {
+                    listItems.Visibility = Visibility.Visible;
+                    AdminFrame.Visibility = Visibility.Collapsed;
+                }));
                 MessageBox.Show($"Редактирование товара: {product.product1}");
             }
         }
@@ -268,26 +274,28 @@ namespace shop.Pages
         {
             var button = sender as Button;
             var product = button?.DataContext as product;
-            
-            if (product != null)
+
+            if (product == null) return;
+
+            MessageBoxResult result = MessageBox.Show(
+                $"Вы точно хотите удалить товар: {product.product1}?",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question
+            );
+
+            if (result == MessageBoxResult.Yes)
             {
-                var result = MessageBox.Show($"Вы уверены, что хотите удалить товар '{product.product1}'?", 
-                    "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                
-                if (result == MessageBoxResult.Yes)
+                try
                 {
-                    try
-                    {
-                        db.product.Remove(product);
-                        db.SaveChanges();
-                        LoadProducts();
-                        MessageBox.Show("Товар успешно удален.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Ошибка при удалении товара: {ex.Message}", "Ошибка", 
-                            MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    db.product.Remove(product);
+                    db.SaveChanges();
+                    LoadProducts(); // Обновляем список
+                    MessageBox.Show("Товар успешно удален!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -304,7 +312,13 @@ namespace shop.Pages
             {
                 listItems.Visibility = Visibility.Collapsed;
                 AdminFrame.Visibility = Visibility.Visible;
-                AdminFrame.Navigate(new ProductDetails(selectedProduct));
+                AdminFrame.Navigate(new ProductDetails(selectedProduct, () =>
+                {
+                    // Колбэк для возврата
+                    listItems.Visibility = Visibility.Visible;
+                    AdminFrame.Visibility = Visibility.Collapsed;
+                    AdminFrame.Content = null;
+                }));
             }
         }
     }

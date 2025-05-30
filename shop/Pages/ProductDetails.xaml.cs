@@ -21,22 +21,17 @@ namespace shop.Pages
     /// </summary>
     public partial class ProductDetails : Page
     {
-        public ProductDetails(product selectedProduct)
-    {
-        InitializeComponent();
-        this.DataContext = selectedProduct;
-    }
+        private Action _goBackAction;
+        public ProductDetails(product selectedProduct, Action goBackAction)
+        {
+            InitializeComponent();
+            this.DataContext = selectedProduct;
+            _goBackAction = goBackAction;
+        }
 
-    private void BackButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (NavigationService.CanGoBack)
+        private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.GoBack();
+            _goBackAction?.Invoke();
         }
-        else
-        {
-            MessageBox.Show("Нет предыдущих страниц для возвращения.", "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
-    }
     }
 }

@@ -37,9 +37,10 @@
                     <TextBlock Text="Стоимость:" FontWeight="Bold" Margin="0,10,0,0" Foreground="#8800cc"/>
                     <TextBlock Text="{Binding price, StringFormat={}{0} руб.}" Foreground="#8800cc"/>
 
-                    <Button Content="← Назад" Width="80" Height="30" Background="Transparent"
-                            BorderBrush="Transparent" BorderThickness="1" Foreground="#8800cc"
-                            FontWeight="Normal" Margin="0,0,0,10" Click="BackButton_Click"/>
+                    <Button x:Name="BackButton" Content="← Назад" Click="BackButton_Click" 
+                    HorizontalAlignment="Left" VerticalAlignment="Top"
+                    Margin="10" Padding="5" Background="#FFF6D0FF"
+                    Foreground="#8800cc" BorderBrush="#8800cc"/>
                 </StackPanel>
             </ScrollViewer>
         </Border>

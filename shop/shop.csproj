@@ -137,6 +137,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\EditProductPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\ProductDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -152,6 +156,9 @@
     </Compile>
     <Compile Include="Pages\Autoriz.xaml.cs">
       <DependentUpon>Autoriz.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\EditProductPage.xaml.cs">
+      <DependentUpon>EditProductPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\ProductDetails.xaml.cs">
       <DependentUpon>ProductDetails.xaml</DependentUpon>

@@ -109,9 +109,9 @@
                                 <TextBlock Text="В наличии:" FontWeight="Bold" Foreground="#8800cc"/>
                                 <TextBlock Text="{Binding quantity}" Margin="0,0,0,5" Foreground="#8800cc"/>
                                 <TextBlock Text="Описание:" FontWeight="Bold" Foreground="#8800cc"/>
-                                <TextBlock Text="{Binding description}" Margin="0,0,0,5" Foreground="#8800cc"/>
+                                <TextBlock Text="{Binding description, TargetNullValue='Нет описания'}" Margin="0,0,0,5" Foreground="#8800cc"/>
                                 <TextBlock Text="Бренд:" FontWeight="Bold" Foreground="#8800cc"/>
-                                <TextBlock Text="{Binding brand.brand1}" Margin="0,0,0,5" Foreground="#8800cc"/>
+                                <TextBlock Text="{Binding brand.brand1, TargetNullValue='Бренд не указан'}" Margin="0,0,0,5" Foreground="#8800cc"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Content="Редактировать" Margin="5" BorderBrush="#8800cc" Background="#FFF6D0FF" Foreground="#8800cc"
                                             Click="EditProduct_Click"/>
