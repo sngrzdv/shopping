@@ -3,27 +3,62 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace shop.Pages
 {
-    public partial class AdminPage : Page
+    /// <summary>
+    /// Логика взаимодействия для UserPage.xaml
+    /// </summary>
+    public partial class UserPage : Page
     {
-        private Frame adminFrame;
         private dressshopEntities db;
         private List<product> allProducts;
         private department selectedDepartment;
         private category selectedCategory;
         private type selectedType;
-
-        public AdminPage()
+        public UserPage()
         {
             InitializeComponent();
             db = new dressshopEntities();
             LoadDepartments();
             LoadProducts();
+        }
+
+        private void BtnAllProducts_Click(object sender, RoutedEventArgs e)
+        {
+            // Сбрасываем выбранные фильтры
+            selectedDepartment = null;
+            selectedCategory = null;
+            selectedType = null;
+
+            // Очищаем выбор в списках
+            DepartmentList.SelectedItem = null;
+            CategoryList.SelectedItem = null;
+            TypeList.SelectedItem = null;
+
+            // Очищаем поиск
+            SearchBox.Text = "";
+
+            // Сбрасываем сортировку на "По умолчанию"
+            SortComboBox.SelectedIndex = 0;
+
+            // Загружаем все товары
+            LoadProducts();
+
+            // Обновляем списки категорий и типов
+            LoadCategories();
+            LoadTypes();
         }
 
         private void LoadDepartments()
@@ -85,21 +120,25 @@ namespace shop.Pages
 
         private void LoadProducts()
         {
-            allProducts = db.product
+            try
+            {
+                // Получаем все товары с включенными связанными данными
+                allProducts = db.product
                 .Include(p => p.department)
                 .Include(p => p.category)
                 .Include(p => p.type)
                 .Include(p => p.brand)
+                .Where(p => p.quantity > 0) // Фильтр по наличию
                 .ToList();
 
-            // Обработка null-значений
-            foreach (var p in allProducts)
-            {
-                p.description = string.IsNullOrEmpty(p.description) ? "Нет описания" : p.description;
-                if (p.brand == null) p.brand = new brand { brand1 = "Бренд не указан" };
+                ApplyFilters();
             }
-
-            ApplyFilters();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки товаров: {ex.Message}", "Ошибка",
+                               MessageBoxButton.OK, MessageBoxImage.Error);
+                allProducts = new List<product>(); // Возвращаем пустой список при ошибке
+            }
         }
 
         private void ApplyFilters()
@@ -121,7 +160,7 @@ namespace shop.Pages
                 query = query.Where(p =>
                     p.product1.ToLower().Contains(searchText) ||
                     p.description.ToLower().Contains(searchText) ||
-                    p.brand.brand1.ToLower().Contains(searchText));
+                    (p.brand != null && p.brand.brand1.ToLower().Contains(searchText)));
             }
 
             switch ((SortComboBox.SelectedItem as ComboBoxItem)?.Content.ToString())
@@ -169,32 +208,6 @@ namespace shop.Pages
             ApplyFilters();
         }
 
-        private void BtnAllProducts_Click(object sender, RoutedEventArgs e)
-        {
-            // Сбрасываем выбранные фильтры
-            selectedDepartment = null;
-            selectedCategory = null;
-            selectedType = null;
-
-            // Очищаем выбор в списках
-            DepartmentList.SelectedItem = null;
-            CategoryList.SelectedItem = null;
-            TypeList.SelectedItem = null;
-
-            // Очищаем поиск
-            SearchBox.Text = "";
-
-            // Сбрасываем сортировку на "По умолчанию"
-            SortComboBox.SelectedIndex = 0;
-
-            // Загружаем все товары
-            LoadProducts();
-
-            // Обновляем списки категорий и типов
-            LoadCategories();
-            LoadTypes();
-        }
-
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyFilters();
@@ -205,91 +218,23 @@ namespace shop.Pages
             ApplyFilters();
         }
 
-        private void EditProduct_Click(object sender, RoutedEventArgs e)
+        private void AddToCart_Click(object sender, RoutedEventArgs e)
         {
             var product = (sender as Button)?.DataContext as product;
             if (product != null)
             {
-                listItems.Visibility = Visibility.Collapsed;
-                AdminFrame.Visibility = Visibility.Visible;
-                AdminFrame.Navigate(new EditProductPage(product, () =>
-                {
-                    listItems.Visibility = Visibility.Visible;
-                    AdminFrame.Visibility = Visibility.Collapsed;
-                    LoadProducts();
-                }));
+                // Добавление товара в корзину
+                CartManager.AddToCart(product);
+                MessageBox.Show($"Товар {product.product1} добавлен в корзину", "Корзина");
             }
-        }
-
-        private void DeleteProduct_Click(object sender, RoutedEventArgs e)
-        {
-            var product = (sender as Button)?.DataContext as product;
-            if (product == null) return;
-
-            if (MessageBox.Show($"Удалить товар '{product.product1}'?", "Подтверждение",
-                MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-            {
-                try
-                {
-                    db.product.Remove(product);
-                    db.SaveChanges();
-                    LoadProducts();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Ошибка удаления: {ex.Message}");
-                }
-            }
-        }
-
-        private void BtnAddProduct_Click(object sender, RoutedEventArgs e)
-        {
-            var newProduct = new product
-            {
-                product1 = "Новый товар",
-                price = 0,
-                quantity = 0,
-                description = "Описание",
-                image = "/Resources/placeholder.png",
-                department = db.department.FirstOrDefault(),
-                category = db.category.FirstOrDefault(),
-                type = db.type.FirstOrDefault(),
-                brand = db.brand.FirstOrDefault()
-            };
-
-            listItems.Visibility = Visibility.Collapsed;
-            AdminFrame.Visibility = Visibility.Visible;
-            AdminFrame.Navigate(new EditProductPage(newProduct, () =>
-            {
-                listItems.Visibility = Visibility.Visible;
-                AdminFrame.Visibility = Visibility.Collapsed;
-                LoadProducts();
-            }));
         }
 
         private void listItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (listItems.SelectedItem is product selectedProduct)
             {
-                listItems.Visibility = Visibility.Collapsed;
-                AdminFrame.Visibility = Visibility.Visible;
-                AdminFrame.Navigate(new ProductDetails(selectedProduct, () =>
-                {
-                    listItems.Visibility = Visibility.Visible;
-                    AdminFrame.Visibility = Visibility.Collapsed;
-                }));
+                NavigationService.Navigate(new ProductDetailsPage(selectedProduct));
             }
-        }
-
-        // Остальные методы
-        private void BtnProducts_Click(object sender, RoutedEventArgs e) { }
-        private void BtnOrders_Click(object sender, RoutedEventArgs e) { }
-        private void BtnUsers_Click(object sender, RoutedEventArgs e) { }
-        private void BtnLogout_Click(object sender, RoutedEventArgs e) { }
-
-        private void BtnAllProducts_Click_1(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

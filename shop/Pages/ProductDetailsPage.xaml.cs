@@ -1,5 +1,4 @@
-﻿using shop.AppData;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,19 +15,14 @@ using System.Windows.Shapes;
 
 namespace shop.Pages
 {
-    public partial class ProductDetails : Page
+    /// <summary>
+    /// Логика взаимодействия для ProductDetailsPage.xaml
+    /// </summary>
+    public partial class ProductDetailsPage : Page
     {
-        private Action _goBackAction;
-        public ProductDetails(product selectedProduct, Action goBackAction)
+        public ProductDetailsPage()
         {
             InitializeComponent();
-            this.DataContext = selectedProduct;
-            _goBackAction = goBackAction;
-        }
-
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            _goBackAction?.Invoke();
         }
     }
 }

@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:shop.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="650" d:DesignWidth="800"
       Title="Редактирование товара">
 
     <Grid Margin="10">
@@ -17,20 +17,41 @@
             <!-- Цена -->
             <TextBlock Text="Цена:" Margin="0,5"/>
             <TextBox x:Name="PriceBox" 
-         Text="{Binding price}" 
-         PreviewTextInput="NumberValidationTextBox"
-         Margin="0,5"/>
+            Text="{Binding price}" 
+            PreviewTextInput="NumberValidationTextBox"
+            Margin="0,5"/>
 
             <!-- Количество -->
             <TextBlock Text="Количество:" Margin="0,5"/>
             <TextBox x:Name="QuantityBox" 
-         Text="{Binding quantity}" 
-         PreviewTextInput="IntegerValidationTextBox"
-         Margin="0,5"/>
+            Text="{Binding quantity}" 
+            PreviewTextInput="IntegerValidationTextBox"
+            Margin="0,5"/>
 
             <!-- Описание -->
             <TextBlock Text="Описание:" Margin="0,5"/>
             <TextBox x:Name="DescBox" Text="{Binding description}" Margin="0,5" Height="60" TextWrapping="Wrap"/>
+
+            <!-- Департамент -->
+            <TextBlock Text="Департамент:"/>
+            <ComboBox x:Name="DepartmentComboBox" DisplayMemberPath="department1" Margin="0,5"/>
+
+            <!-- Категория -->
+            <TextBlock Text="Категория:"/>
+            <ComboBox x:Name="CategoryComboBox" DisplayMemberPath="category1" Margin="0,5"/>
+
+            <!-- Тип -->
+            <TextBlock Text="Тип:"/>
+            <ComboBox x:Name="TypeComboBox" DisplayMemberPath="type1" Margin="0,5"/>
+
+            <!-- Бренд -->
+            <TextBlock Text="Бренд:"/>
+            <ComboBox x:Name="BrandComboBox" DisplayMemberPath="brand1" Margin="0,5"/>
+
+            <!-- Фото -->
+            <TextBlock Text="Фото:"/>
+            <Button Content="Выбрать изображение" Click="SelectImage_Click" Margin="0,5"/>
+            <Image x:Name="ProductImage" Width="200" Height="200" Stretch="Uniform"/>
 
             <!-- Кнопки -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">

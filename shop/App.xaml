@@ -12,5 +12,68 @@
             <Setter Property="Padding" Value="15,5"/>
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
+
+        <Style x:Key="EditTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#FFF6F0FF"/>
+            <Setter Property="BorderBrush" Value="#8800cc"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+
+        <Style x:Key="FilterComboBox" TargetType="ComboBox">
+            <Setter Property="Background" Value="#FFF6F0FF"/>
+            <Setter Property="BorderBrush" Value="#8800cc"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+
+        <Style x:Key="ImageSelectButton" TargetType="Button">
+            <Setter Property="Background" Value="#FFF6D0FF"/>
+            <Setter Property="BorderBrush" Value="#8800cc"/>
+            <Setter Property="Foreground" Value="#8800cc"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style x:Key="SaveButton" TargetType="Button">
+            <Setter Property="Background" Value="#FFEC9DFF"/>
+            <Setter Property="BorderBrush" Value="#8800cc"/>
+            <Setter Property="Foreground" Value="#8800cc"/>
+            <Setter Property="Padding" Value="15,5"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Width" Value="120"/>
+        </Style>
+
+        <Style x:Key="CancelButton" TargetType="Button">
+            <Setter Property="Background" Value="#FFF6D0FF"/>
+            <Setter Property="BorderBrush" Value="#8800cc"/>
+            <Setter Property="Foreground" Value="#8800cc"/>
+            <Setter Property="Padding" Value="15,5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Width" Value="120"/>
+        </Style>
+
+        <Style x:Key="AddButton" TargetType="Button">
+            <Setter Property="Background" Value="#FFF6D0FF"/>
+            <Setter Property="BorderBrush" Value="#8800cc"/>
+            <Setter Property="Foreground" Value="#8800cc"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="1" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Application.Resources>
 </Application>
