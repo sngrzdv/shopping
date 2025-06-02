@@ -17,16 +17,16 @@
             <!-- Цена -->
             <TextBlock Text="Цена:" Margin="0,5"/>
             <TextBox x:Name="PriceBox" 
-            Text="{Binding price}" 
-            PreviewTextInput="NumberValidationTextBox"
-            Margin="0,5"/>
+                     Text="{Binding price}" 
+                     PreviewTextInput="NumberValidationTextBox"
+                     Margin="0,5"/>
 
             <!-- Количество -->
             <TextBlock Text="Количество:" Margin="0,5"/>
             <TextBox x:Name="QuantityBox" 
-            Text="{Binding quantity}" 
-            PreviewTextInput="IntegerValidationTextBox"
-            Margin="0,5"/>
+                     Text="{Binding quantity}" 
+                     PreviewTextInput="IntegerValidationTextBox"
+                     Margin="0,5"/>
 
             <!-- Описание -->
             <TextBlock Text="Описание:" Margin="0,5"/>
@@ -50,7 +50,10 @@
 
             <!-- Фото -->
             <TextBlock Text="Фото:"/>
-            <Button Content="Выбрать изображение" Click="SelectImage_Click" Margin="0,5"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="ImagePathTextBox" Margin="0,5" Width="300"/>
+                <Button Content="Выбрать" Click="SelectImage_Click" Margin="5" Padding="10,5"/>
+            </StackPanel>
             <Image x:Name="ProductImage" Width="200" Height="200" Stretch="Uniform"/>
 
             <!-- Кнопки -->

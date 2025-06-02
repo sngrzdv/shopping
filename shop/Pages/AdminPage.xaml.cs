@@ -85,6 +85,10 @@ namespace shop.Pages
 
         private void LoadProducts()
         {
+            // Отсоединяем все отслеживаемые объекты
+            db.Dispose();
+            db = new dressshopEntities();
+
             allProducts = db.product
                 .Include(p => p.department)
                 .Include(p => p.category)
@@ -207,18 +211,61 @@ namespace shop.Pages
 
         private void EditProduct_Click(object sender, RoutedEventArgs e)
         {
-            var product = (sender as Button)?.DataContext as product;
-            if (product != null)
+            var productToEdit = (sender as Button)?.DataContext as product;
+            if (productToEdit != null)
             {
                 listItems.Visibility = Visibility.Collapsed;
                 AdminFrame.Visibility = Visibility.Visible;
-                AdminFrame.Navigate(new EditProductPage(product, () =>
+
+                var editPage = new EditProductPage(productToEdit, () =>
                 {
+                    // Этот код выполнится при возврате со страницы редактирования
                     listItems.Visibility = Visibility.Visible;
                     AdminFrame.Visibility = Visibility.Collapsed;
-                    LoadProducts();
-                }));
+
+                    // Обновляем данные
+                    RefreshData();
+                });
+
+                AdminFrame.Navigate(editPage);
             }
+        }
+
+        private void RefreshData()
+        {
+            // Сохраняем текущие фильтры
+            var currentDepartment = selectedDepartment;
+            var currentCategory = selectedCategory;
+            var currentType = selectedType;
+            var currentSearch = SearchBox.Text;
+            var currentSort = SortComboBox.SelectedIndex;
+
+            // Полностью перезагружаем данные
+            LoadProducts();
+
+            // Восстанавливаем фильтры
+            if (currentDepartment != null)
+            {
+                DepartmentList.SelectedItem = currentDepartment;
+                LoadCategories(currentDepartment.id_department);
+            }
+
+            if (currentCategory != null)
+            {
+                CategoryList.SelectedItem = currentCategory;
+                LoadTypes(currentCategory.id_category);
+            }
+
+            if (currentType != null)
+            {
+                TypeList.SelectedItem = currentType;
+            }
+
+            SearchBox.Text = currentSearch;
+            SortComboBox.SelectedIndex = currentSort;
+
+            // Применяем фильтры
+            ApplyFilters();
         }
 
         private void DeleteProduct_Click(object sender, RoutedEventArgs e)
@@ -259,12 +306,15 @@ namespace shop.Pages
 
             listItems.Visibility = Visibility.Collapsed;
             AdminFrame.Visibility = Visibility.Visible;
-            AdminFrame.Navigate(new EditProductPage(newProduct, () =>
+
+            var editPage = new EditProductPage(newProduct, () =>
             {
                 listItems.Visibility = Visibility.Visible;
                 AdminFrame.Visibility = Visibility.Collapsed;
-                LoadProducts();
-            }));
+                RefreshData();
+            });
+
+            AdminFrame.Navigate(editPage);
         }
 
         private void listItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -283,13 +333,38 @@ namespace shop.Pages
 
         // Остальные методы
         private void BtnProducts_Click(object sender, RoutedEventArgs e) { }
-        private void BtnOrders_Click(object sender, RoutedEventArgs e) { }
+        private void BtnOrders_Click(object sender, RoutedEventArgs e)
+        {
+            // Переход на страницу администрирования заказов
+            NavigationService.Navigate(new Uri("AdminOrderPage.xaml", UriKind.Relative));
+        }
         private void BtnUsers_Click(object sender, RoutedEventArgs e) { }
         private void BtnLogout_Click(object sender, RoutedEventArgs e) { }
 
         private void BtnAllProducts_Click_1(object sender, RoutedEventArgs e)
         {
+            // Сбрасываем выбранные фильтры
+            selectedDepartment = null;
+            selectedCategory = null;
+            selectedType = null;
 
+            // Очищаем выбор в списках
+            DepartmentList.SelectedItem = null;
+            CategoryList.SelectedItem = null;
+            TypeList.SelectedItem = null;
+
+            // Очищаем поиск
+            SearchBox.Text = "";
+
+            // Сбрасываем сортировку на "По умолчанию"
+            SortComboBox.SelectedIndex = 0;
+
+            // Загружаем все товары
+            LoadProducts();
+
+            // Обновляем списки категорий и типов
+            LoadCategories();
+            LoadTypes();
         }
     }
 }

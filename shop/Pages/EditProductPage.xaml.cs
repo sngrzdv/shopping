@@ -2,6 +2,9 @@
 using shop.AppData;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,13 +35,19 @@ namespace shop.Pages
         {
             InitializeComponent();
 
-            // Инициализируем контекст БД в первую очередь
             _db = new dressshopEntities();
             _goBackAction = goBackAction;
-
-            // Проверяем, новый ли товар
             _isNewProduct = productToEdit.id_product == 0;
-            _product = _isNewProduct ? CreateNewProduct() : productToEdit;
+
+            // Если товар новый - создаем, иначе загружаем текущий из БД
+            _product = _isNewProduct ? CreateNewProduct() : _db.product.Find(productToEdit.id_product);
+
+            if (_product == null)
+            {
+                MessageBox.Show("Товар не найден в базе данных!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                NavigationService?.GoBack();
+                return;
+            }
 
             DataContext = _product;
             LoadComboBoxData();
@@ -66,13 +75,11 @@ namespace shop.Pages
 
         private void LoadComboBoxData()
         {
-            // Загружаем списки
             DepartmentComboBox.ItemsSource = _db.department.ToList();
             CategoryComboBox.ItemsSource = _db.category.ToList();
             TypeComboBox.ItemsSource = _db.type.ToList();
             BrandComboBox.ItemsSource = _db.brand.ToList();
 
-            // Устанавливаем текущие значения
             DepartmentComboBox.SelectedItem = _product.department;
             CategoryComboBox.SelectedItem = _product.category;
             TypeComboBox.SelectedItem = _product.type;
@@ -85,8 +92,23 @@ namespace shop.Pages
             {
                 if (!string.IsNullOrEmpty(_product.image))
                 {
-                    _imagePath = _product.image; // Сохраняем текущий путь
-                    ProductImage.Source = new BitmapImage(new Uri(_product.image));
+                    _imagePath = _product.image;
+                    ImagePathTextBox.Text = _product.image; // Устанавливаем путь в текстовое поле
+
+                    // Проверяем, является ли путь абсолютным
+                    if (File.Exists(_product.image) || Uri.IsWellFormedUriString(_product.image, UriKind.Absolute))
+                    {
+                        ProductImage.Source = new BitmapImage(new Uri(_product.image, UriKind.RelativeOrAbsolute));
+                    }
+                    else
+                    {
+                        // Попробуем найти изображение относительно исполняемого файла
+                        string fullPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _product.image.TrimStart('/'));
+                        if (File.Exists(fullPath))
+                        {
+                            ProductImage.Source = new BitmapImage(new Uri(fullPath));
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -109,12 +131,8 @@ namespace shop.Pages
                 try
                 {
                     _imagePath = openFileDialog.FileName;
-                    // Обновляем сразу в объекте товара
-                    _product.image = _imagePath;
+                    ImagePathTextBox.Text = _imagePath; // Обновляем текстовое поле
                     ProductImage.Source = new BitmapImage(new Uri(_imagePath));
-
-                    // Для немедленного отображения изменений
-                    ProductImage.UpdateLayout();
                 }
                 catch (Exception ex)
                 {
@@ -126,98 +144,131 @@ namespace shop.Pages
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            // Проверка названия
             if (string.IsNullOrWhiteSpace(NameBox.Text))
             {
                 MessageBox.Show("Введите название товара!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // Проверка цены (должна быть положительным числом)
             if (!decimal.TryParse(PriceBox.Text, out decimal price) || price <= 0)
             {
                 MessageBox.Show("Введите корректную цену (число > 0)!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // Проверка количества (должно быть целым числом ≥ 0)
             if (!int.TryParse(QuantityBox.Text, out int quantity) || quantity < 0)
             {
                 MessageBox.Show("Введите корректное количество (целое число ≥ 0)!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            try
-            {
-                if (!string.IsNullOrEmpty(_product.image))
-                {
-                    _imagePath = _product.image; // Сохраняем текущий путь
-                    ProductImage.Source = new BitmapImage(new Uri(_product.image));
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка загрузки изображения: {ex.Message}",
-                              "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            // Валидация данных (как в предыдущем примере)
             if (!ValidateInput()) return;
 
             try
             {
                 // Обновляем данные
                 _product.product1 = NameBox.Text;
-                _product.price = decimal.Parse(PriceBox.Text);
-                _product.quantity = int.Parse(QuantityBox.Text);
+                _product.price = price;
+                _product.quantity = quantity;
                 _product.description = DescBox.Text;
-                _product.department = (department)DepartmentComboBox.SelectedItem;
-                _product.category = (category)CategoryComboBox.SelectedItem;
-                _product.type = (type)TypeComboBox.SelectedItem;
-                _product.brand = (brand)BrandComboBox.SelectedItem;
 
-                // Обновляем фото (если выбрано новое)
-                if (!string.IsNullOrEmpty(_imagePath))
+                // Убедимся, что навигационные свойства установлены правильно
+                _product.id_department = ((department)DepartmentComboBox.SelectedItem).id_department;
+                _product.id_category = ((category)CategoryComboBox.SelectedItem).id_category;
+                _product.id_type = ((type)TypeComboBox.SelectedItem).id_type;
+                _product.id_brand = ((brand)BrandComboBox.SelectedItem).id_brand;
+
+                // Обновляем фото
+                if (!string.IsNullOrEmpty(ImagePathTextBox.Text))
                 {
-                    _product.image = _imagePath;
+                    _product.image = ImagePathTextBox.Text;
                 }
 
+                // Явно указываем, что объект изменен
+                _db.Entry(_product).State = _isNewProduct ? EntityState.Added : EntityState.Modified;
+
                 _db.SaveChanges();
-                MessageBox.Show("Товар успешно обновлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Товар успешно сохранен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 _goBackAction?.Invoke();
+            }
+            catch (DbUpdateException ex)
+            {
+                string errorMessage = "Ошибка сохранения в БД:\n";
+
+                // Получаем все внутренние исключения
+                var innerEx = ex.InnerException;
+                while (innerEx != null)
+                {
+                    errorMessage += innerEx.Message + "\n";
+                    innerEx = innerEx.InnerException;
+                }
+
+                MessageBox.Show(errorMessage, "Ошибка сохранения", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Откатываем изменения
+                _db.Entry(_product).Reload();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка: {ex.Message}\n\n{ex.InnerException?.Message}",
+                              "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private bool ValidateInput()
         {
-            // Добавьте проверки для всех полей
             if (DepartmentComboBox.SelectedItem == null)
             {
                 MessageBox.Show("Выберите департамент!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
+
+            if (CategoryComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите категорию!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (TypeComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите тип!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            if (BrandComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите бренд!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
             return true;
         }
-            private void CancelButton_Click(object sender, RoutedEventArgs e)
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
+            // Отменяем изменения для нового товара
+            if (_isNewProduct)
+            {
+                _db.product.Remove(_product);
+            }
+            else
+            {
+                // Отменяем изменения для существующего товара
+                _db.Entry(_product).Reload();
+            }
+
             _goBackAction?.Invoke();
             NavigationService?.GoBack();
         }
 
-        // Разрешает ввод только чисел (с точкой для decimal)
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             if (!char.IsDigit(e.Text, 0) && e.Text != ".")
             {
-                e.Handled = true; // Блокируем ввод
+                e.Handled = true;
             }
         }
 
-        // Разрешает ввод только целых чисел
         private void IntegerValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             if (!char.IsDigit(e.Text, 0))

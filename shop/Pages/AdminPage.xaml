@@ -24,6 +24,7 @@
             <Button Content="Заказы" Style="{StaticResource MenuButton}" Click="BtnOrders_Click" Foreground="#FFEC9DFF"/>
             <Button Content="Пользователи" Style="{StaticResource MenuButton}" Click="BtnUsers_Click" Foreground="#FFEC9DFF"/>
             <Button Content="Выход" Style="{StaticResource MenuButton}" Click="BtnLogout_Click" HorizontalAlignment="Right" Foreground="#FFEC9DFF"/>
+            <!--<Button Content="Обновить" Width="100" Margin="5" Click="Refresh_Click" Background="#FFF6D0FF" Foreground="#8800cc" BorderBrush="#8800cc" BorderThickness="1"/>-->
         </StackPanel>
 
         <!-- Панель фильтрации слева -->
