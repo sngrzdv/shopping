@@ -43,8 +43,8 @@ namespace shop.Pages
 
                 if (user.id_role == 3) // админ
                     NavigationService.Navigate(new AdminPage());
-                /*else // обычный пользователь
-                    NavigationService.Navigate(new UserPage());*/
+                else // обычный пользователь
+                    NavigationService.Navigate(new UserPage());
             }
             else
             {

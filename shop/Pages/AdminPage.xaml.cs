@@ -250,7 +250,7 @@ namespace shop.Pages
                 price = 0,
                 quantity = 0,
                 description = "Описание",
-                image = "/Resources/placeholder.png",
+                image = "/Images/picture.jpg",
                 department = db.department.FirstOrDefault(),
                 category = db.category.FirstOrDefault(),
                 type = db.type.FirstOrDefault(),

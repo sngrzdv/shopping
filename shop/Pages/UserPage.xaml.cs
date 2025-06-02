@@ -223,8 +223,8 @@ namespace shop.Pages
             var product = (sender as Button)?.DataContext as product;
             if (product != null)
             {
-                // Добавление товара в корзину
-                CartManager.AddToCart(product);
+                /*// Добавление товара в корзину
+                CartManager.AddToCart(product);*/
                 MessageBox.Show($"Товар {product.product1} добавлен в корзину", "Корзина");
             }
         }
@@ -233,7 +233,7 @@ namespace shop.Pages
         {
             if (listItems.SelectedItem is product selectedProduct)
             {
-                NavigationService.Navigate(new ProductDetailsPage(selectedProduct));
+                /*NavigationService.Navigate(new ProductDetailsPage(selectedProduct));*/
             }
         }
     }
