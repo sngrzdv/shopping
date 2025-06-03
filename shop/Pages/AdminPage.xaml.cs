@@ -332,14 +332,22 @@ namespace shop.Pages
         }
 
         // Остальные методы
-        private void BtnProducts_Click(object sender, RoutedEventArgs e) { }
+        private void BtnProducts_Click(object sender, RoutedEventArgs e) 
+        { 
+
+        }
         private void BtnOrders_Click(object sender, RoutedEventArgs e)
         {
-            // Переход на страницу администрирования заказов
-            NavigationService.Navigate(new Uri("AdminOrderPage.xaml", UriKind.Relative));
+            NavigationService.Navigate(new AdminOrdersPage());
         }
-        private void BtnUsers_Click(object sender, RoutedEventArgs e) { }
-        private void BtnLogout_Click(object sender, RoutedEventArgs e) { }
+        private void BtnUsers_Click(object sender, RoutedEventArgs e) 
+        {
+            NavigationService.Navigate(new AdminUsersPage());
+        }
+        private void BtnLogout_Click(object sender, RoutedEventArgs e) 
+        {
+            NavigationService.Navigate(new Autoriz());
+        }
 
         private void BtnAllProducts_Click_1(object sender, RoutedEventArgs e)
         {

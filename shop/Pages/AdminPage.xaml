@@ -20,7 +20,7 @@
 
         <!-- Верхнее меню -->
         <StackPanel Grid.ColumnSpan="2" Grid.Row="0" Orientation="Horizontal" Background="#8800cc">
-            <Button Content="Товары" Style="{StaticResource MenuButton}" Click="BtnProducts_Click" Foreground="#FFEC9DFF"/>
+            <Button Content="Товары" Style="{StaticResource MenuButton}" Click="BtnProducts_Click" Foreground="#8800cc" Background="#FFEC9DFF"/>
             <Button Content="Заказы" Style="{StaticResource MenuButton}" Click="BtnOrders_Click" Foreground="#FFEC9DFF"/>
             <Button Content="Пользователи" Style="{StaticResource MenuButton}" Click="BtnUsers_Click" Foreground="#FFEC9DFF"/>
             <Button Content="Выход" Style="{StaticResource MenuButton}" Click="BtnLogout_Click" HorizontalAlignment="Right" Foreground="#FFEC9DFF"/>
@@ -74,7 +74,7 @@
 
                 <!-- Сортировка -->
                 <ComboBox x:Name="SortComboBox" Margin="0,0,0,10" Foreground="#8800cc" BorderBrush="#8800cc" Background="White"
-                          SelectionChanged="SortComboBox_SelectionChanged" Height="30">
+                          SelectionChanged="SortComboBox_SelectionChanged" Height="28">
                     <ComboBoxItem Content="По умолчанию"/>
                     <ComboBoxItem Content="По названию (А-Я)"/>
                     <ComboBoxItem Content="По названию (Я-А)"/>

@@ -25,5 +25,10 @@ namespace shop.AppData
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<order> order { get; set; }
+
+        public static implicit operator order_status(string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

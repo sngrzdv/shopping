@@ -129,7 +129,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Pages\AdminOrderPage.xaml">
+    <Page Include="Pages\AdminOrdersPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -137,11 +137,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\AdminUsersPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\Autoriz.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\CartPage.xaml">
+    <Page Include="Pages\ChangeRoleDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -153,11 +157,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\ProductDetailsPage.xaml">
+    <Page Include="Pages\Registr.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\Registr.xaml">
+    <Page Include="Pages\UserBasketPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -167,17 +171,21 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Pages\AdminOrderPage.xaml.cs">
-      <DependentUpon>AdminOrderPage.xaml</DependentUpon>
+    <Compile Include="Pages\AdminOrdersPage.xaml.cs">
+      <DependentUpon>AdminOrdersPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\AdminPage.xaml.cs">
       <DependentUpon>AdminPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\AdminUsersPage.xaml.cs">
+      <DependentUpon>AdminUsersPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Autoriz.xaml.cs">
       <DependentUpon>Autoriz.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\CartPage.xaml.cs">
-      <DependentUpon>CartPage.xaml</DependentUpon>
+    <Compile Include="Pages\CartItemViewModel.cs" />
+    <Compile Include="Pages\ChangeRoleDialog.xaml.cs">
+      <DependentUpon>ChangeRoleDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\EditProductPage.xaml.cs">
       <DependentUpon>EditProductPage.xaml</DependentUpon>
@@ -185,11 +193,11 @@
     <Compile Include="Pages\ProductDetails.xaml.cs">
       <DependentUpon>ProductDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Pages\ProductDetailsPage.xaml.cs">
-      <DependentUpon>ProductDetailsPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Pages\Registr.xaml.cs">
       <DependentUpon>Registr.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\UserBasketPage.xaml.cs">
+      <DependentUpon>UserBasketPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\UserPage.xaml.cs">
       <DependentUpon>UserPage.xaml</DependentUpon>
@@ -238,7 +246,6 @@
       <DependentUpon>Model1.edmx</DependentUpon>
       <LastGenOutput>Model1.cs</LastGenOutput>
     </Content>
-    <Resource Include="Images\в-образная.jpg" />
     <Resource Include="Images\платье.jpg" />
     <Resource Include="shoppaymentorderbuy-34_icon-icons.com_73865.ico" />
     <Resource Include="Images\picture.jpg" />

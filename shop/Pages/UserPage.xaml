@@ -31,10 +31,10 @@
             <StackPanel Margin="5">
                 <!-- Все товары -->
                 <Button x:Name="BtnAllProducts" Content="Все товары" 
-                    Margin="0,0,0,15" Padding="8"
+                    Margin="0,0,0,15"
                     Background="#FFF6D0FF" Foreground="#8800cc"
                     BorderBrush="#8800cc" BorderThickness="1"
-                    Click="BtnAllProducts_Click">
+                    Click="BtnAllProducts_Click" Height="28">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="4"/>
@@ -60,25 +60,8 @@
                 </TextBox>
 
                 <!-- Сортировка -->
-                <ComboBox x:Name="SortComboBox" Margin="0,0,0,15" 
-                  Foreground="#8800cc" BorderBrush="#8800cc" 
-                  Background="#FFEC9DFF"
-                  SelectionChanged="SortComboBox_SelectionChanged" 
-                  Height="32">
-                    <ComboBox.Template>
-                        <ControlTemplate TargetType="ComboBox">
-                            <Border CornerRadius="2"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}">
-                                <Grid>
-                                    <ToggleButton x:Name="toggleButton" Focusable="false"/>
-                                    <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
-                                        Margin="{TemplateBinding Padding}"/>
-                                </Grid>
-                            </Border>
-                        </ControlTemplate>
-                    </ComboBox.Template>
+                <ComboBox x:Name="SortComboBox" Margin="0,0,0,10" Foreground="#8800cc" BorderBrush="#8800cc" Background="White"
+          SelectionChanged="SortComboBox_SelectionChanged" Height="28">
                     <ComboBoxItem Content="По умолчанию"/>
                     <ComboBoxItem Content="По названию (А-Я)"/>
                     <ComboBoxItem Content="По названию (Я-А)"/>

@@ -223,8 +223,8 @@ namespace shop.Pages
             var product = (sender as Button)?.DataContext as product;
             if (product != null)
             {
-                /*// Добавление товара в корзину
-                CartManager.AddToCart(product);*/
+                // Добавление товара в корзину
+                CartManager.AddToCart(product);
                 MessageBox.Show($"Товар {product.product1} добавлен в корзину", "Корзина");
             }
         }
@@ -233,8 +233,23 @@ namespace shop.Pages
         {
             if (listItems.SelectedItem is product selectedProduct)
             {
-                /*NavigationService.Navigate(new ProductDetailsPage(selectedProduct));*/
+                /*NavigationService.Navigate(new ProductDetails(selectedProduct));*/
             }
+        }
+
+        private void BtnGoToBasket_Click(object sender, RoutedEventArgs e)
+        {
+            // Получаем ID текущего пользователя (предположим, он хранится в свойстве CurrentUserId)
+            int userId = CurrentUserId; // Замените на ваш способ получения ID пользователя
+
+            // Создаем и открываем страницу корзины
+            UserBasketPage basketPage = new UserBasketPage(userId);
+            this.NavigationService.Navigate(basketPage);
+
+            // Или для окна:
+            // UserBasketPage basketPage = new UserBasketPage(userId);
+            // basketPage.Show();
+            // this.Close(); // если нужно закрыть текущую страницу
         }
     }
 }
