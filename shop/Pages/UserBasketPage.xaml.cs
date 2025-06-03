@@ -21,83 +21,229 @@ namespace shop.Pages
 {
     public partial class UserBasketPage : Page
     {
+        private int userId;
         private dressshopEntities db = new dressshopEntities();
-        private int currentUserId; // ID текущего пользователя
-        private ObservableCollection<CartItemViewModel> _cartItems;
 
-        public UserBasketPage(int userId)
+        public UserBasketPage()
         {
             InitializeComponent();
-            currentUserId = userId;
-            _cartItems = new ObservableCollection<CartItemViewModel>();
-            CartItemsControl.ItemsSource = _cartItems;
+
+            if (AppConnect.CurrentUser?.id_user == null)
+            {
+                MessageBox.Show("Для просмотра корзины необходимо авторизоваться",
+                              "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                NavigationService?.GoBack();
+                return;
+            }
+
+            userId = (int)AppConnect.CurrentUser.id_user;
             LoadCartItems();
+        }
+
+
+        // Вложенный класс для работы с корзиной
+        public class CartManager
+        {
+            private readonly dressshopEntities _db;
+            private readonly int _userId;
+
+            public CartManager(dressshopEntities db, int userId)
+            {
+                _db = db;
+                _userId = userId;
+            }
+
+            public void AddToCart(int productId, int quantity = 1)
+            {
+                try
+                {
+                    var existingItem = _db.basket
+                        .FirstOrDefault(b => b.id_user == _userId && b.id_product == productId);
+
+                    if (existingItem != null)
+                    {
+                        existingItem.quantity += quantity;
+                    }
+                    else
+                    {
+                        var newItem = new basket
+                        {
+                            id_user = _userId,
+                            id_product = productId,
+                            quantity = quantity
+                        };
+                        _db.basket.Add(newItem);
+                    }
+
+                    _db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при добавлении в корзину: {ex.Message}");
+                }
+            }
+
+            public void RemoveFromCart(int basketId)
+            {
+                try
+                {
+                    var item = _db.basket.Find(basketId);
+                    if (item != null)
+                    {
+                        _db.basket.Remove(item);
+                        _db.SaveChanges();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении из корзины: {ex.Message}");
+                }
+            }
+
+            public void UpdateQuantity(int basketId, int newQuantity)
+            {
+                try
+                {
+                    var item = _db.basket.Find(basketId);
+                    if (item != null)
+                    {
+                        item.quantity = newQuantity;
+                        _db.SaveChanges();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при обновлении количества: {ex.Message}");
+                }
+            }
+
+            public List<basket> GetUserCart()
+            {
+                return _db.basket
+                    .Include(b => b.product)
+                    .Where(b => b.id_user == _userId)
+                    .ToList();
+            }
+
+            public decimal GetCartTotal()
+            {
+                return _db.basket
+                    .Include(b => b.product)
+                    .Where(b => b.id_user == _userId)
+                    .Sum(b => b.quantity * b.product.price);
+            }
         }
 
         private void LoadCartItems()
         {
-            _cartItems.Clear();
-
-            var basketItems = db.basket
-                .Where(b => b.id_user == currentUserId)
-                .Include(b => b.product)
-                .ToList();
-
-            foreach (var item in basketItems)
+            try
             {
-                _cartItems.Add(new CartItemViewModel(item));
+                var cartItems = db.basket
+                    .Include(b => b.product)
+                    .Where(b => b.id_user == userId)
+                    .ToList();
+
+                CartListView.ItemsSource = cartItems;
+                UpdateTotalSums();
             }
-
-            UpdateTotalAmount();
-        }
-
-        private void UpdateTotalAmount()
-        {
-            decimal total = _cartItems.Sum(item => item.ItemTotal);
-            TotalAmountText.Text = total.ToString("C");
-        }
-
-        private void ClearCart_Click(object sender, RoutedEventArgs e)
-        {
-            var itemsToRemove = db.basket.Where(b => b.id_user == currentUserId).ToList();
-            db.basket.RemoveRange(itemsToRemove);
-            db.SaveChanges();
-            LoadCartItems();
-        }
-
-        private void IncreaseQuantity_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button && button.Tag is int basketId)
+            catch (Exception ex)
             {
-                var item = db.basket.Find(basketId);
-                if (item != null)
+                MessageBox.Show($"Ошибка при загрузке корзины: {ex.Message}",
+                              "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void UpdateTotalSums()
+        {
+            // Обновляем суммы для каждого товара
+            foreach (var item in CartListView.Items)
+            {
+                if (item is basket basketItem)
                 {
-                    item.quantity++;
-                    db.SaveChanges();
-                    LoadCartItems();
+                    var container = CartListView.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
+                    if (container != null)
+                    {
+                        var totalText = FindDescendant<TextBlock>(container, "TotalSumText");
+                        if (totalText != null)
+                        {
+                            totalText.Text = $"Сумма: {basketItem.quantity * basketItem.product.price:N} ₽";
+                        }
+                    }
                 }
             }
+
+            // Обновляем общую сумму корзины
+            decimal total = db.basket
+                .Include(b => b.product)
+                .Where(b => b.id_user == userId)
+                .Sum(b => b.quantity * b.product.price);
+
+            CartTotalText.Text = $"Итого: {total:N} ₽";
+        }
+
+        // Вспомогательный метод для поиска элементов в визуальном дереве
+        private T FindDescendant<T>(DependencyObject parent, string name) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T && (child as FrameworkElement)?.Name == name)
+                    return (T)child;
+
+                var result = FindDescendant<T>(child, name);
+                if (result != null)
+                    return result;
+            }
+            return null;
         }
 
         private void DecreaseQuantity_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.Tag is int basketId)
+            if (((FrameworkElement)sender).DataContext is basket item)
             {
-                var item = db.basket.Find(basketId);
-                if (item != null)
+                if (item.quantity > 1)
                 {
-                    if (item.quantity > 1)
-                    {
-                        item.quantity--;
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        db.basket.Remove(item);
-                        db.SaveChanges();
-                    }
-                    LoadCartItems();
+                    item.quantity--;
+                    db.SaveChanges();
+                    UpdateTotalSums();
+
                 }
+            }
+        }
+
+        private void IncreaseQuantity_Click(object sender, RoutedEventArgs e)
+        {
+            if (((FrameworkElement)sender).DataContext is basket item)
+            {
+                item.quantity++;
+                db.SaveChanges();
+                UpdateTotalSums();
+            }
+        }
+
+        private void QuantityBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (((FrameworkElement)sender).DataContext is basket item &&
+                int.TryParse(((TextBox)sender).Text, out int newQuantity) &&
+                newQuantity > 0)
+            {
+                item.quantity = newQuantity;
+                db.SaveChanges();
+                UpdateTotalSums();
+            }
+            else
+            {
+                LoadCartItems(); // Восстанавливаем корректное значение
+            }
+        }
+
+        private void RemoveItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (((FrameworkElement)sender).DataContext is basket item)
+            {
+                db.basket.Remove(item);
+                db.SaveChanges();
+                LoadCartItems();
             }
         }
 
@@ -105,77 +251,39 @@ namespace shop.Pages
         {
             try
             {
-                // Проверяем, есть ли товары в корзине
                 var cartItems = db.basket
-                    .Where(b => b.id_user == currentUserId)
                     .Include(b => b.product)
+                    .Where(b => b.id_user == userId)
                     .ToList();
 
-                if (!cartItems.Any())
+                if (cartItems.Count == 0)
                 {
-                    MessageBox.Show("Ваша корзина пуста!");
+                    MessageBox.Show("Корзина пуста", "Ошибка",
+                                  MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
-                // Создаем новый заказ
-                var order = new AppData.order
-                {
-                    id_user = currentUserId,
-                    date = DateTime.Now,
-                    order_status = "В сборке"
-                };
+                decimal total = cartItems.Sum(item => item.quantity * item.product.price);
 
-                db.order.Add(order);
-                db.SaveChanges();
-
-                // Добавляем товары из корзины в детали заказа
-                foreach (var item in cartItems)
-                {
-                    var detail = new AppData.details_order
-                    {
-                        id_order = order.id_order,
-                        id_product = item.id_product,
-                        quantity = item.quantity
-                        // price не указываем, если его нет в модели
-                        // Или используем цену из связанного товара:
-                        // price = item.product.price (если добавите поле в модель)
-                    };
-
-                    db.details_order.Add(detail);
-                }
+                MessageBox.Show($"Заказ на сумму {total:N} ₽ успешно оформлен!", "Успех",
+                              MessageBoxButton.OK, MessageBoxImage.Information);
 
                 // Очищаем корзину
                 db.basket.RemoveRange(cartItems);
                 db.SaveChanges();
 
-                MessageBox.Show($"Заказ №{order.id_order} успешно оформлен!");
                 LoadCartItems();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при оформлении заказа: {ex.Message}");
+                MessageBox.Show($"Ошибка при оформлении заказа: {ex.Message}",
+                              "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // Обработчики для верхнего меню
-        private void BtnProducts_Click(object sender, RoutedEventArgs e)
+        private void Catalog_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new UserPage());
-        }
-
-        private void BtnOrders_Click(object sender, RoutedEventArgs e)
-        {
-            /*NavigationService.Navigate(new OrdersPage(currentUserId));*/
-        }
-
-        private void BtnUsers_Click(object sender, RoutedEventArgs e)
-        {
-            /*NavigationService.Navigate(new UsersPage());*/
-        }
-
-        private void BtnLogout_Click(object sender, RoutedEventArgs e)
-        {
-            NavigationService.Navigate(new Autoriz());
         }
     }
 }

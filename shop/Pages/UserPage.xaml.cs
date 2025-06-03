@@ -220,13 +220,25 @@ namespace shop.Pages
 
         private void AddToCart_Click(object sender, RoutedEventArgs e)
         {
-            var product = (sender as Button)?.DataContext as product;
-            if (product != null)
+            if (AppConnect.CurrentUser.id_user.ToString() == null)
             {
-                // Добавление товара в корзину
-                CartManager.AddToCart(product);
-                MessageBox.Show($"Товар {product.product1} добавлен в корзину", "Корзина");
+                MessageBox.Show("UserId не найден.");
+                return;
             }
+
+
+            if ((sender as Button)?.DataContext is product selectedProduct)
+            {
+
+                int userId = (int)AppConnect.CurrentUser.id_user;
+                var db = new dressshopEntities();
+                var cartManager = new UserBasketPage.CartManager(db, userId);
+                cartManager.AddToCart(selectedProduct.id_product);
+
+                MessageBox.Show($"Товар {selectedProduct.product1} добавлен в корзину",
+                              "Корзина", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else { MessageBox.Show("Ghbfghh"); }
         }
 
         private void listItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -239,17 +251,17 @@ namespace shop.Pages
 
         private void BtnGoToBasket_Click(object sender, RoutedEventArgs e)
         {
-            // Получаем ID текущего пользователя (предположим, он хранится в свойстве CurrentUserId)
-            int userId = CurrentUserId; // Замените на ваш способ получения ID пользователя
+            
+        }
 
-            // Создаем и открываем страницу корзины
-            UserBasketPage basketPage = new UserBasketPage(userId);
-            this.NavigationService.Navigate(basketPage);
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new UserBasketPage());
+        }
 
-            // Или для окна:
-            // UserBasketPage basketPage = new UserBasketPage(userId);
-            // basketPage.Show();
-            // this.Close(); // если нужно закрыть текущую страницу
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new UserOrdersPage());
         }
     }
 }
