@@ -51,7 +51,7 @@
             <!-- Фото -->
             <TextBlock Text="Фото:"/>
             <StackPanel Orientation="Horizontal">
-                <TextBox x:Name="ImagePathTextBox" Margin="0,5" Width="300"/>
+                <TextBox x:Name="ImagePathTextBox" Margin="0,5" Width="300" TextChanged="ImagePathTextBox_TextChanged"/>
                 <Button Content="Выбрать" Click="SelectImage_Click" Margin="5" Padding="10,5"/>
             </StackPanel>
             <Image x:Name="ProductImage" Width="200" Height="200" Stretch="Uniform"/>

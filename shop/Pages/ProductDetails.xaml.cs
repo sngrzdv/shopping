@@ -27,8 +27,10 @@ namespace shop.Pages
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            _goBackAction?.Invoke();
+        { if (Flag.Roleeee == 3)
+                _goBackAction?.Invoke();
+            else {  NavigationService.GoBack();}
+           
         }
     }
 }

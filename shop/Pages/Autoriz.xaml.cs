@@ -22,6 +22,7 @@ namespace shop.Pages
     public partial class Autoriz : Page
     {
         private string _lastEnteredEmail = string.Empty;
+       
 
         public Autoriz()
         {
@@ -40,6 +41,8 @@ namespace shop.Pages
             if (user != null)
             {
                 AppConnect.CurrentUser = user; // Сохраняем пользователя
+                Flag.Roleeee = user.id_role;
+                Flag.IDIDuser = user.id_user;
 
                 if (user.id_role == 3) // админ
                     NavigationService.Navigate(new AdminPage());

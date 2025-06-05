@@ -21,6 +21,14 @@ namespace shop.Pages
     {
         private dressshopEntities db;
         private List<product> allProducts;
+        public List<basket> GetUserCart()
+        {
+            return _db.basket
+                .Include(b => b.product) // Обязательно включай связанные товары
+                .Where(b => b.id_user == _userId)
+                .ToList();
+        }
+
         private department selectedDepartment;
         private category selectedCategory;
         private type selectedType;
@@ -242,7 +250,7 @@ namespace shop.Pages
         {
             if (listItems.SelectedItem is product selectedProduct)
             {
-                NavigationService.Navigate(new ProductDetails(selectedProduct));
+                NavigationService.Navigate(new ProductDetails(selectedProduct, null) );
             }
         }
 
@@ -260,5 +268,73 @@ namespace shop.Pages
         {
             NavigationService.Navigate(new Autoriz());
         }
+        public class CartManager
+        {
+            private readonly dressshopEntities _db;
+            private readonly int _userId;
+
+            public CartManager(dressshopEntities db, int userId)
+            {
+                _db = db;
+                _userId = userId;
+            }
+
+            public void AddToCart(int productId, int quantity = 1)
+            {
+                var existingItem = _db.basket.FirstOrDefault(b => b.id_user == _userId && b.id_product == productId);
+                if (existingItem != null)
+                {
+                    existingItem.quantity += quantity;
+                }
+                else
+                {
+                    var newItem = new basket
+                    {
+                        id_user = _userId,
+                        id_product = productId,
+                        quantity = quantity
+                    };
+                    _db.basket.Add(newItem);
+                }
+                _db.SaveChanges();
+            }
+
+            public void RemoveFromCart(int basketId)
+            {
+                var item = _db.basket.FirstOrDefault(b => b.id_basket == basketId && b.id_user == _userId);
+                if (item != null)
+                {
+                    _db.basket.Remove(item);
+                    _db.SaveChanges();
+                }
+            }
+
+            public void UpdateQuantity(int basketId, int newQuantity)
+            {
+                var item = _db.basket.FirstOrDefault(b => b.id_basket == basketId && b.id_user == _userId);
+                if (item != null)
+                {
+                    item.quantity = newQuantity;
+                    _db.SaveChanges();
+                }
+            }
+
+            public List<basket> GetUserCart()
+            {
+                return _db.basket
+                    .Include(b => b.product)
+                    .Where(b => b.id_user == _userId)
+                    .ToList();
+            }
+
+            public decimal GetCartTotal()
+            {
+                return _db.basket
+                    .Include(b => b.product)
+                    .Where(b => b.id_user == _userId)
+                    .Sum(b => b.quantity * b.product.price);
+            }
+        }
+
     }
 }

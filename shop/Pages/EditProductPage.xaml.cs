@@ -276,5 +276,10 @@ namespace shop.Pages
                 e.Handled = true;
             }
         }
+
+        private void ImagePathTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
