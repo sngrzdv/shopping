@@ -17,9 +17,6 @@ using System.Windows.Shapes;
 
 namespace shop.Pages
 {
-    /// <summary>
-    /// Логика взаимодействия для UserPage.xaml
-    /// </summary>
     public partial class UserPage : Page
     {
         private dressshopEntities db;
@@ -245,23 +242,23 @@ namespace shop.Pages
         {
             if (listItems.SelectedItem is product selectedProduct)
             {
-                /*NavigationService.Navigate(new ProductDetails(selectedProduct));*/
+                NavigationService.Navigate(new ProductDetails(selectedProduct));
             }
         }
 
-        private void BtnGoToBasket_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void BtnCart_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new UserBasketPage());
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void BtnOrders_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new UserOrdersPage());
+        }
+
+        private void BtnLogout_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new Autoriz());
         }
     }
 }

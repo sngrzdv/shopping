@@ -144,67 +144,100 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Border BorderBrush="#8800cc" BorderThickness="2" 
-                                CornerRadius="8" Margin="10" Padding="10" 
-                                Width="300" Height="380" Background="White">
-                            <StackPanel>
+                    CornerRadius="8" Margin="10" Padding="10" 
+                    Width="500" Height="300" Background="White">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Фотография слева -->
                                 <Image Source="{Binding CurrentPhoto}" 
-                                       Width="270" Height="140" Stretch="Fill" 
-                                       Margin="0,1,1,10"/>
-                                <TextBlock Text="{Binding product1}" 
-                                           FontWeight="Bold" FontSize="16" 
-                                           TextAlignment="Center" Foreground="#8800cc"/>
-                                <TextBlock Text="Цена:" FontWeight="Bold" 
-                                           Foreground="#8800cc"/>
-                                <TextBlock Text="{Binding price, StringFormat='{} {0:N} ₽'}" 
-                                           Margin="0,0,0,5" Foreground="#8800cc"/>
-                                <TextBlock Text="В наличии:" FontWeight="Bold" 
-                                           Foreground="#8800cc"/>
-                                <TextBlock Text="{Binding quantity}" 
-                                           Margin="0,0,0,5" Foreground="#8800cc"/>
-                                <TextBlock Text="Описание:" FontWeight="Bold" 
-                                           Foreground="#8800cc"/>
-                                <TextBlock Text="{Binding description, TargetNullValue='Нет описания'}" 
-                                           Margin="0,0,0,5" Foreground="#8800cc"/>
-                                <TextBlock Text="Бренд:" FontWeight="Bold" 
-                                           Foreground="#8800cc"/>
-                                <TextBlock Text="{Binding brand.brand1, TargetNullValue='Бренд не указан'}" 
-                                           Margin="0,0,0,5" Foreground="#8800cc"/>
-                                <StackPanel Orientation="Horizontal" 
-                                            HorizontalAlignment="Center" Margin="0,10,0,0">
-                                    <Button Content="Редактировать" 
-                                        Margin="5" Padding="10,5"
-                                        Background="#FFF6D0FF" Foreground="#8800cc"
-                                        BorderBrush="#8800cc" BorderThickness="1" FontWeight="SemiBold"
-                                        Click="EditProduct_Click">  
-                                        <Button.Template>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border CornerRadius="2"
-                                                    Background="{TemplateBinding Background}"
-                                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                                    BorderThickness="{TemplateBinding BorderThickness}">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                    </Button>
-                                    <Button Content="Удалить" 
-                                        Margin="5" Padding="10,5"
-                                        Background="#FFF6D0FF" Foreground="#8800cc"
-                                        BorderBrush="#8800cc" BorderThickness="1" FontWeight="SemiBold"
-                                        Click="DeleteProduct_Click">
-                                        <Button.Template>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border CornerRadius="2"
-                                                Background="{TemplateBinding Background}"
-                                                BorderBrush="{TemplateBinding BorderBrush}"
-                                                BorderThickness="{TemplateBinding BorderThickness}">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                    </Button>
+                           Grid.Column="0" 
+                           Width="200" Height="250" Stretch="Uniform" 
+                           Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                <!-- Информация и кнопки справа -->
+                                <StackPanel Grid.Column="1" Margin="10">
+                                    <TextBlock Text="{Binding product1}" 
+                                   FontWeight="Bold" FontSize="16" 
+                                   TextAlignment="Left" Foreground="#8800cc" Margin="0,0,0,5"/>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Text="Цена:" FontWeight="Bold" Grid.Row="0" Grid.Column="0"
+                                       Foreground="#8800cc"/>
+                                        <TextBlock Text="{Binding price, StringFormat='{} {0:N} ₽'}" Grid.Row="0" Grid.Column="1"
+                                       Margin="5,0,0,5" Foreground="#8800cc"/>
+
+                                        <TextBlock Text="В наличии:" FontWeight="Bold" Grid.Row="1" Grid.Column="0"
+                                       Foreground="#8800cc"/>
+                                        <TextBlock Text="{Binding quantity}" Grid.Row="1" Grid.Column="1"
+                                       Margin="5,0,0,5" Foreground="#8800cc"/>
+
+                                        <TextBlock Text="Бренд:" FontWeight="Bold" Grid.Row="2" Grid.Column="0"
+                                       Foreground="#8800cc"/>
+                                        <TextBlock Text="{Binding brand.brand1, TargetNullValue='Бренд не указан'}" Grid.Row="2" Grid.Column="1"
+                                       Margin="5,0,0,5" Foreground="#8800cc"/>
+
+                                        <TextBlock Text="Описание:" FontWeight="Bold" Grid.Row="3" Grid.Column="0"
+                                       Foreground="#8800cc"/>
+                                        <TextBlock Text="{Binding description, TargetNullValue='Нет описания'}" Grid.Row="3" Grid.Column="1"
+                                       Margin="5,0,0,5" Foreground="#8800cc" TextWrapping="Wrap"/>
+                                    </Grid>
+
+                                    <!-- Кнопки внизу справа -->
+                                    <StackPanel Grid.Row="2" Orientation="Vertical" 
+                                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                    Margin="0,40,0,0">
+                                        <Button Content="Редактировать" 
+                                Height="28" Width="200"
+                                Margin="0,0,0,5" Padding="0"
+                                Background="#FFF6D0FF" Foreground="#8800cc"
+                                BorderBrush="#8800cc" BorderThickness="1" FontWeight="SemiBold"
+                                Click="EditProduct_Click">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border CornerRadius="2"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                        <Button Content="Удалить" 
+                                Height="28" Width="200"
+                                Padding="0"
+                                Background="#8800cc" Foreground="#FFF6D0FF"
+                                BorderBrush="#8800cc" BorderThickness="1" FontWeight="SemiBold"
+                                Click="DeleteProduct_Click">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border CornerRadius="2"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </ListView.ItemTemplate>

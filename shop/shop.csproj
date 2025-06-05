@@ -265,6 +265,7 @@
       <DependentUpon>Model1.edmx</DependentUpon>
       <LastGenOutput>Model1.cs</LastGenOutput>
     </Content>
+    <Resource Include="Images\джинсы.jpg" />
     <Resource Include="Images\платье.jpg" />
     <Resource Include="shoppaymentorderbuy-34_icon-icons.com_73865.ico" />
     <Resource Include="Images\picture.jpg" />
