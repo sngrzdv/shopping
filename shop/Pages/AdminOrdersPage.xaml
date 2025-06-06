@@ -70,7 +70,7 @@
                 <!-- Товары в заказе -->
                 <DataGrid x:Name="OrderItemsDataGrid" Grid.Row="2" Margin="0,10,0,0" AutoGenerateColumns="False" IsReadOnly="True">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Товар" Binding="{Binding product.name}"/>
+                        <DataGridTextColumn Header="Товар" Binding="{Binding product.product1}"/>
                         <DataGridTextColumn Header="Количество" Binding="{Binding quantity}"/>
                         <DataGridTextColumn Header="Цена" Binding="{Binding product.price}"/>
                         <DataGridTextColumn Header="Сумма" Binding="{Binding Path=product.price}"/>

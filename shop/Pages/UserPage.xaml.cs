@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,13 +22,6 @@ namespace shop.Pages
     {
         private dressshopEntities db;
         private List<product> allProducts;
-        public List<basket> GetUserCart()
-        {
-            return _db.basket
-                .Include(b => b.product) // Обязательно включай связанные товары
-                .Where(b => b.id_user == _userId)
-                .ToList();
-        }
 
         private department selectedDepartment;
         private category selectedCategory;
@@ -225,27 +219,62 @@ namespace shop.Pages
 
         private void AddToCart_Click(object sender, RoutedEventArgs e)
         {
-            if (AppConnect.CurrentUser.id_user.ToString() == null)
+            try
             {
-                MessageBox.Show("UserId не найден.");
-                return;
+                if ((sender as FrameworkElement)?.DataContext is product selectedProduct)
+                {
+                    var currentUser = AppConnect.CurrentUser;
+                    if (currentUser == null)
+                    {
+                        MessageBox.Show("Для добавления товаров в корзину необходимо авторизоваться",
+                                       "Требуется авторизация",
+                                       MessageBoxButton.OK,
+                                       MessageBoxImage.Warning);
+                        NavigationService.Navigate(new Autoriz());
+                        return;
+                    }
+
+                    // Получаем свежий экземпляр продукта из базы данных
+                    var productFromDb = AppConnect.modelOdb.product.Find(selectedProduct.id_product);
+
+                    // Проверяем, есть ли уже такой товар в корзине пользователя
+                    var existingItem = AppConnect.modelOdb.basket
+                        .FirstOrDefault(b => b.id_user == currentUser.id_user &&
+                                           b.id_product == productFromDb.id_product);
+
+                    if (existingItem != null)
+                    {
+                        // Увеличиваем количество, если товар уже в корзине
+                        existingItem.quantity += 1;
+                    }
+                    else
+                    {
+                        // Создаем новую запись в корзине
+                        var newBasketItem = new basket
+                        {
+                            id_user = currentUser.id_user,
+                            id_product = productFromDb.id_product,
+                            quantity = 1
+                        };
+                        AppConnect.modelOdb.basket.Add(newBasketItem);
+                    }
+
+                    AppConnect.modelOdb.SaveChanges();
+
+                    MessageBox.Show($"Товар '{productFromDb.product1}' добавлен в корзину",
+                                   "Успешно",
+                                   MessageBoxButton.OK,
+                                   MessageBoxImage.Information);
+                }
             }
-
-
-            if ((sender as Button)?.DataContext is product selectedProduct)
+            catch (Exception ex)
             {
-
-                int userId = (int)AppConnect.CurrentUser.id_user;
-                var db = new dressshopEntities();
-                var cartManager = new UserBasketPage.CartManager(db, userId);
-                cartManager.AddToCart(selectedProduct.id_product);
-
-                MessageBox.Show($"Товар {selectedProduct.product1} добавлен в корзину",
-                              "Корзина", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Ошибка при добавлении товара в корзину: {ex.Message}",
+                               "Ошибка",
+                               MessageBoxButton.OK,
+                               MessageBoxImage.Error);
             }
-            else { MessageBox.Show("Ghbfghh"); }
         }
-
         private void listItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (listItems.SelectedItem is product selectedProduct)
@@ -256,12 +285,12 @@ namespace shop.Pages
 
         private void BtnCart_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new UserBasketPage());
+            NavigationService.Navigate(new CartPage());
         }
 
         private void BtnOrders_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new UserOrdersPage());
+            NavigationService.Navigate(new UserOrdersPage(null));
         }
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)

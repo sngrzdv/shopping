@@ -158,6 +158,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\CartPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\ChangeRoleDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -171,10 +175,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\Registr.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Pages\UserBasketPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -201,6 +201,10 @@
       <DependentUpon>Autoriz.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\CartItemViewModel.cs" />
+    <Compile Include="Pages\CartManager.cs" />
+    <Compile Include="Pages\CartPage.xaml.cs">
+      <DependentUpon>CartPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ChangeRoleDialog.xaml.cs">
       <DependentUpon>ChangeRoleDialog.xaml</DependentUpon>
     </Compile>
@@ -213,9 +217,6 @@
     <Compile Include="Pages\QuantityPriceToSumConverter.cs" />
     <Compile Include="Pages\Registr.xaml.cs">
       <DependentUpon>Registr.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Pages\UserBasketPage.xaml.cs">
-      <DependentUpon>UserBasketPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pages\UserOrdersPage.xaml.cs">
       <DependentUpon>UserOrdersPage.xaml</DependentUpon>
@@ -267,6 +268,14 @@
       <DependentUpon>Model1.edmx</DependentUpon>
       <LastGenOutput>Model1.cs</LastGenOutput>
     </Content>
+    <Resource Include="Images\ремень.jpg" />
+    <Resource Include="Images\джинсыЛ.jpg" />
+    <Resource Include="Images\кеды.jpg" />
+    <Resource Include="Images\костюм.jpg" />
+    <Resource Include="Images\кроссовки.jpg" />
+    <Resource Include="Images\рубашка.jpg" />
+    <Resource Include="Images\шарф.jpg" />
+    <Resource Include="Images\пальто.jpg" />
     <Resource Include="Images\джинсы.jpg" />
     <Resource Include="Images\платье.jpg" />
     <Resource Include="shoppaymentorderbuy-34_icon-icons.com_73865.ico" />

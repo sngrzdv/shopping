@@ -5,8 +5,9 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:shop.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="Мои заказы">
+      d:DesignHeight="600" d:DesignWidth="900"
+      Title="Мои заказы"
+      Background="#FFEC9DFF">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -14,23 +15,75 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Background="#FFEC9DFF">
-            <Button Content="Каталог" Click="Catalog_Click" Style="{StaticResource MenuButton}"/>
-            <Button Content="Корзина" Click="Cart_Click" Style="{StaticResource MenuButton}"/>
-            <Button Content="Мои заказы" Style="{StaticResource MenuButton}" FontWeight="Bold"/>
-            <Button Content="Выйти" Click="Logout_Click" Style="{StaticResource MenuButton}" HorizontalAlignment="Right"/>
+        <!-- Верхнее меню -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Background="#8800cc">
+            <Button Content="Каталог" Style="{StaticResource MenuButton}" Click="Catalog_Click" Foreground="#FFEC9DFF"/>
+            <Button Content="Корзина" Style="{StaticResource MenuButton}" Click="Cart_Click" Foreground="#FFEC9DFF"/>
+            <Button Content="Мои заказы" Style="{StaticResource MenuButton}" Click="Button_Click" Foreground="#8800cc" Background="#FFEC9DFF" Height="27"/>
+            <Button Content="Выход" Style="{StaticResource MenuButton}" Click="BtnLogout_Click" HorizontalAlignment="Right" Foreground="#FFEC9DFF"/>
         </StackPanel>
 
-        <!-- Список заказов -->
-        <ListView Grid.Row="1" x:Name="OrdersListView" Margin="10">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="Номер" DisplayMemberBinding="{Binding Id}" Width="80"/>
-                    <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding Date, StringFormat=dd.MM.yyyy}" Width="120"/>
-                    <GridViewColumn Header="Статус" Width="150" DisplayMemberBinding="{Binding Status}"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <!-- Основное содержимое -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Список заказов -->
+            <ListView x:Name="OrdersListView" Grid.Column="0" Margin="5" SelectionChanged="OrdersListView_SelectionChanged">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Номер" DisplayMemberBinding="{Binding id_order}"/>
+                        <GridViewColumn Header="Дата" DisplayMemberBinding="{Binding date, StringFormat={}{0:dd.MM.yyyy}}"/>
+                        <GridViewColumn Header="Статус" DisplayMemberBinding="{Binding order_status.status}"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+            <!-- Детали заказа -->
+            <Grid Grid.Column="1" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Информация о заказе -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <TextBlock Text="Заказ №" FontWeight="Bold"/>
+                    <TextBlock x:Name="OrderIdText" Margin="5,0,10,0"/>
+
+                    <TextBlock Text="Дата:" FontWeight="Bold"/>
+                    <TextBlock x:Name="OrderDateText" Margin="5,0,10,0"/>
+
+                    <TextBlock Text="Статус:" FontWeight="Bold"/>
+                    <TextBlock x:Name="OrderStatusText" Margin="5,0,10,0"/>
+                </StackPanel>
+
+                <!-- Информация о пользователе -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10,0,0">
+                    <TextBlock Text="Пользователь:" FontWeight="Bold"/>
+                    <TextBlock x:Name="UserInfoText" Margin="5,0"/>
+                </StackPanel>
+
+                <!-- Товары в заказе -->
+                <DataGrid x:Name="OrderItemsDataGrid" Grid.Row="2" Margin="0,10,0,0" AutoGenerateColumns="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Товар" Binding="{Binding product.product1}"/>
+                        <DataGridTextColumn Header="Количество" Binding="{Binding quantity}"/>
+                        <DataGridTextColumn Header="Цена" Binding="{Binding product.price}"/>
+                        <DataGridTextColumn Header="Сумма" Binding="{Binding Path=product.price}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Итоговая сумма -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <TextBlock Text="Итого:" FontWeight="Bold"/>
+                    <TextBlock x:Name="TotalAmountText" Margin="5,0" FontWeight="Bold"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
     </Grid>
 </Page>

@@ -20,7 +20,7 @@
 
         <!-- Верхнее меню -->
         <StackPanel Grid.ColumnSpan="2" Grid.Row="0" Orientation="Horizontal" Background="#8800cc">
-            <Button Content="Каталог" Style="{StaticResource MenuButton}" Foreground="#FFEC9DFF"/>
+            <Button Content="Каталог" Style="{StaticResource MenuButton}" Foreground="#8800cc" Background="#FFEC9DFF"/>
             <Button Content="Корзина" Style="{StaticResource MenuButton}" Foreground="#FFEC9DFF" Click="BtnCart_Click"/>
             <Button Content="Мои заказы" Style="{StaticResource MenuButton}" Foreground="#FFEC9DFF" Click="BtnOrders_Click"/>
             <Button Content="Выйти" Style="{StaticResource MenuButton}" HorizontalAlignment="Right" Foreground="#FFEC9DFF" Click="BtnLogout_Click"/>

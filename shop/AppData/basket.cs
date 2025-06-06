@@ -21,5 +21,7 @@ namespace shop.AppData
     
         public virtual product product { get; set; }
         public virtual user user { get; set; }
+
+        public decimal TotalPrice => product?.price * quantity ?? 0;
     }
 }
